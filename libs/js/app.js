@@ -1,6 +1,7 @@
 $(document).ready(()=>{
 
 let tileLayerKey = config.tileLayer;
+let ipinfoTokenKey = config.ipinfoToken;
 
 //=========================================================================================================
 //Setting up map and tiles
@@ -67,6 +68,7 @@ const clickPopup = function(data){
 //=========================================================================================================
 //weather apis ajax call
 const ajaxWeather = (latLng) =>{
+    console.log(latLng);
     $.ajax({
         url: "./libs/php/apis.php",
         type: "POST",
@@ -92,7 +94,7 @@ const ajaxWeather = (latLng) =>{
         },
         error: function(jqXHR, textStatus, errorThrown) {
             // your error code
-            console.log("No data coming from weatherApi.php file");
+            console.log("No data coming from apis.php file");
         }
     });
 }
@@ -206,16 +208,27 @@ var circle = L.circle([lat, lng], {
 circle.bindPopup("Current Location");
 
 //calling the ajaxWeather function and passing an array of lat/lng to find my location
+
 ajaxWeather(latLng);
 }
 
 // =========================================================================================================
 //success callback function will run get the current user Lat/Lng
 function success(pos) {
-    var crd = pos.coords;
-    let currentLat = pos.coords.latitude;
-    let currentLng = pos.coords.longitude;
-    mapLocation(currentLat, currentLng);
+    //using ipinfo to get coordinates from secure https to get current user location (navigator.geolocation is not working without HTTPS :) ) 
+    $.get("https://ipinfo.io?token="+ipinfoTokenKey, function(response) {
+        let loc = response.loc.split(',');
+        
+        mapLocation(loc[0], loc[1]);
+        
+}, "jsonp");
+    //var crd = pos.coords;
+    /* let currentLat = loc[0];
+    let currentLng = loc[0]; */
+    /* let currentLat = 55.8651;
+    let currentLng = -4.2576; */
+    
+    
 
 }
 
@@ -226,13 +239,14 @@ function error(err) {
   }
 
 // ============================================================================================================
-//Following windows navigator.geolocation property will find current position 
+//Following windows navigator.geolocation property will find current position
 if(navigator.geolocation){
     var options = {
         enableHighAccuracy: true,
         timeout: 5000,
         maximumAge: 0
       };
+
     navigator.geolocation.getCurrentPosition(success, error, options);
     let watch = navigator.geolocation.watchPosition(success, error);
     navigator.geolocation.clearWatch(watch);
