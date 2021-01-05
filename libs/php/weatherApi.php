@@ -1,6 +1,6 @@
 <?php
-
-$url = 'https://api.openweathermap.org/data/2.5/find?lat=' . $_REQUEST['lat'] . '&lon=' . $_REQUEST['lng'] . '&cnt=1&appid=4f8f4e7abf4d3e54ac0cb51fdc2f52a4';
+include('../../config.php');
+$url = 'https://api.openweathermap.org/data/2.5/find?lat=' . $_REQUEST['lat'] . '&lon=' . $_REQUEST['lng'] . '&cnt=1&appid='.$appidOpenWeather;
 
 
 //Following is http request for weather api

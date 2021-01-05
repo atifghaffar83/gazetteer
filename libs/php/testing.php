@@ -47,32 +47,6 @@ $countrySelect = array_values($countrySelect);
 $countryCoord = [];
 $countryCoord = $countrySelect[0];
 
-//open weather api end points
-$URLs = array( 
-    //? working but not sure useful
-    //"http://api.openweathermap.org/data/2.5/forecast?id=524901&appid=4f8f4e7abf4d3e54ac0cb51fdc2f52a4",
-    //ok weather city and country wise
-    "http://api.openweathermap.org/data/2.5/weather?q=glasgow&appid=ea469c06c8b7433265361ef6889e5439",
-    //ok weather latlng
-    //"https://api.openweathermap.org/data/2.5/find?lat=' . $_REQUEST['lat'] . '&lon=' . $_REQUEST['lng'] . '&cnt=1&appid=4f8f4e7abf4d3e54ac0cb51fdc2f52a4",
-    //ok earthquake
-    "http://api.geonames.org/earthquakesJSON?formatted=true&north=55.0583836008072&south=47.2701236047002&east=15.0418156516163&west=5.8663152683722&username=geonamesag&style=full",
-    //ok find wiki link latlng
-    "http://api.geonames.org/findNearbyWikipediaJSON?formatted=true&lat=55.94&lng=-4.32&username=geonamesag&style=full",
-    //ok currency echange rate base $ all countries    
-    "https://openexchangerates.org/api/latest.json?app_id=98052232601948bfb212f84740710a97",
-    //ok country information flag, currency, capital, languag, currency,  time offset, region ASAI, country code, population, area, ltlan
-    "https://restcountries.eu/rest/v2/all",
-    //ok museums latlng
-    "https://api.opentripmap.com/0.1/en/places/radius?radius=10000&lon=-4.32&lat=55.94&kinds=museums&format=geojson&apikey=5ae2e3f221c38a28845f05b6b81f99f92d56cb8bd590f0528124e689",
-    //ok monuments and memorials details
-    "https://api.opentripmap.com/0.1/en/places/radius?radius=3000&lon=-4.32&lat=55.94&kinds=monuments_and_memorials&format=json&apikey=5ae2e3f221c38a28845f05b6b81f99f92d56cb8bd590f0528124e689",
-    //intresting plaxes using latlng
-    "https://api.opentripmap.com/0.1/en/places/radius?radius=3000&lon=-4.32&lat=55.94&kinds=interesting_places&format=json&apikey=5ae2e3f221c38a28845f05b6b81f99f92d56cb8bd590f0528124e689",
-    //photos keyword and latlng
-    "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=d196f29bed4717b640485fc44148164c&tags=Hunterian+Art+Gallery&lat=55.87&lon=-4.28&format=json&nojsoncallback=1"
-);
-
 function apisLatLng($urlApis){
 
     global $executionStartTime, $countryCoord ;

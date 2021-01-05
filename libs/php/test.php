@@ -1,4 +1,5 @@
 <?php
+include('../../config.php');
 
 $curl = curl_init();
 
@@ -13,7 +14,7 @@ curl_setopt_array($curl, [
 	CURLOPT_CUSTOMREQUEST => "GET",
 	CURLOPT_HTTPHEADER => [
 		"x-rapidapi-host: andruxnet-world-cities-v1.p.rapidapi.com",
-		"x-rapidapi-key: NGLh9X4rmymshnef3f80R8EnIyCZp1HW5sEjsnCZRNzUYggISu"
+		"x-rapidapi-key: ".$apikeyXRapid
 	],
 ]);
 
