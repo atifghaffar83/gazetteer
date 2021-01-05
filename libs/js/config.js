@@ -1,5 +1,4 @@
 var config = {
-    MY_KEY : '123456',
-    SECRET_KEY : '56789',
-    KEY_2 : '101010'
+    tileLayer : 'Pj6mWHQX5zATlyPXKqc4',
+    
   }

@@ -1,9 +1,10 @@
 $(document).ready(()=>{
 
+const tileLayer = config.tileLayer;
 //=========================================================================================================
 //Setting up map and tiles
     var mymap = L.map('mapid');
-    let tileLayer = L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=Pj6mWHQX5zATlyPXKqc4', {
+    let tileLayer = L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key='+tileLayer, {
     attribution: 'Map data &copy; <a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
     maxZoom: 16,
     zoom: 6,
