@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');
+
+#mapid{
+    /* height: 100vh; */
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#countryList{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 99999;
+    width: 392px;
+    
+}
+.card1 {
+    background-color: #ffffff;
+    align-items: baseline;
+    color: #6f707d;
+    font-family: 'Marcellus', serif
+}
+
+#heading {
+    font-size: 2rem;
+    color: #2b304d
+}
+
+.temp {
+    place-items: center
+}
+
+.temp-details>p>span,
+.grey {
+    color: #a3acc1;
+    font-size: 12px
+}
+
+.fa {
+    color: #a5a5b1
+}
+
+*:focus {
+    outline: none
+}
+
+.leaflet-popup{
+    width: 220px;
+}
+
+.leaflet-popup-content{
+    margin: 20px 4px 14px;
+    width: 90%;
+}
+
+.weatherimg{
+    width: 100%;
+}
+
+.my-1 {
+    margin-top: .80rem!important;
+    
+}
