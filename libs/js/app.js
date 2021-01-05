@@ -213,34 +213,31 @@ ajaxWeather(latLng);
 }
 
 // =========================================================================================================
-//success callback function will run get the current user Lat/Lng
-function success(pos) {
-    //using ipinfo to get coordinates from secure https to get current user location (navigator.geolocation is not working without HTTPS :) ) 
+//using ipinfo to get coordinates from secure https to get current user location (navigator.geolocation is not working without HTTPS :) ) 
+function location() {
+    
     $.get("https://ipinfo.io?token="+ipinfoTokenKey, function(response) {
         let loc = response.loc.split(',');
         
         mapLocation(loc[0], loc[1]);
         
 }, "jsonp");
-    //var crd = pos.coords;
-    /* let currentLat = loc[0];
-    let currentLng = loc[0]; */
-    /* let currentLat = 55.8651;
-    let currentLng = -4.2576; */
-    
-    
 
 }
 
+// =========================================================================================================
+//calling function to get current location
+location();
+
 // ===========================================================================================================
 // error callback function if an issue findind currentPosition
-function error(err) {
+/* function error(err) {
     console.warn(`ERROR(${err.code}): ${err.message}`);
-  }
+  } */
 
 // ============================================================================================================
 //Following windows navigator.geolocation property will find current position
-if(navigator.geolocation){
+/* if(navigator.geolocation){
     var options = {
         enableHighAccuracy: true,
         timeout: 5000,
@@ -253,7 +250,7 @@ if(navigator.geolocation){
 } else{
     //geolocation not enabled
     console.log("geolocation not enabled");
-}
+} */
 
 
 });
