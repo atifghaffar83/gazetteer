@@ -11,6 +11,25 @@ $fileContents = file_get_contents("../data/countryBorders.geo.json");
 $jsonDecode = json_decode($fileContents);
 $featuresList = $jsonDecode->features;
 
+switch($_REQUEST['isoa2']){
+    case "PS":
+        $_REQUEST["lat"] = 31.5;
+        $_REQUEST["lng"] = 34.4667;
+        break;
+
+    case "PK":
+        $_REQUEST["lat"] = 33.693056;
+        $_REQUEST["lng"] = 73.063889;
+        break;
+  
+    
+}
+
+/* if($_REQUEST['isoa2'] == "PS" || $_REQUEST['isoa2'] == "Ps"){
+    $_REQUEST["lat"] = 31.5;
+    $_REQUEST["lng"] = 34.4667;
+} */
+
 //open weather api end points
 $URLs = array( 
     //openeather Api
@@ -24,19 +43,22 @@ $URLs = array(
     //ok earthquake
     //"http://api.geonames.org/earthquakesJSON?formatted=true&north=55.0583836008072&south=47.2701236047002&east=15.0418156516163&west=5.8663152683722&username=".$usernameGeoname."&style=full",
     //ok find wiki link latlng
-    "http://api.geonames.org/findNearbyWikipediaJSON?formatted=true&lat=".$_REQUEST['lat']."&lng=".$_REQUEST['lng']."&username=".$usernameGeoname."&style=full",
+    "http://api.geonames.org/findNearbyWikipediaJSON?formatted=true&lat=".$_REQUEST['lat']."&lng=".$_REQUEST['lng']."&username=".$usernameGeoname."&style=full&maxRows=1",
     //ok currency echange rate base $ all countries    
-    "https://openexchangerates.org/api/latest.json?app_id=".$appidOpenxchng,
+    //"https://openexchangerates.org/api/latest.json?app_id=".$appidOpenxchng,
     //ok country information flag, currency, capital, languag, currency,  time offset, region ASAI, country code, population, area, ltlan
-    "https://restcountries.eu/rest/v2/all",
+    "https://restcountries.eu/rest/v2/alpha/".$_REQUEST['isoa2'],
+    //1 hpoto for banner
+    "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=".$apikeyFlickr."&lat=".$_REQUEST['lat']."&lon=".$_REQUEST['lng']."&per_page=1&page=1&format=json&nojsoncallback=1",
+    //photos keyword and latlng
+    "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=".$apikeyFlickr."&lat=".$_REQUEST['lat']."&lon=".$_REQUEST['lng']."&per_page=10&page=10&format=json&nojsoncallback=1",
     //ok museums latlng
     "https://api.opentripmap.com/0.1/en/places/radius?radius=10000&lon=".$_REQUEST['lng']."&lat=".$_REQUEST['lat']."&kinds=museums&format=geojson&apikey=".$apikeyOpenTripMap,
     //ok monuments and memorials details
     "https://api.opentripmap.com/0.1/en/places/radius?radius=3000&lon=".$_REQUEST['lng']."&lat=".$_REQUEST['lat']."&kinds=monuments_and_memorials&format=json&apikey=".$apikeyOpenTripMap,
     //intresting plaxes using latlng
     "https://api.opentripmap.com/0.1/en/places/radius?radius=3000&lon=".$_REQUEST['lat']."&lat=".$_REQUEST['lat']."&kinds=interesting_places&format=json&apikey=".$apikeyOpenTripMap,
-    //photos keyword and latlng
-    "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=".$apikeyFlickr."&tags=Hunterian+Art+Gallery&lat=".$_REQUEST['lat']."&lon=".$_REQUEST['lng']."&format=json&nojsoncallback=1"
+    
     
 );
 

@@ -1,7 +1,23 @@
 $(document).ready(()=>{
+//global variables
+    let tileLayerKey = config.tileLayer;
+    let ipinfoTokenKey = config.ipinfoToken;
+    let border;
+    let featureGroup;
+    let temp;
+    let date;
+    let markers;
 
-let tileLayerKey = config.tileLayer;
-let ipinfoTokenKey = config.ipinfoToken;
+//=========================================================================================================
+//sidebar function
+var toggleBtn = document.querySelector('.sidebar-toggle');
+var sidebar = document.querySelector('.sidebar');
+
+toggleBtn.addEventListener('click', function() {
+  toggleBtn.classList.toggle('is-closed');
+  sidebar.classList.toggle('is-closed');
+});
+
 
 //=========================================================================================================
 //Setting up map and tiles
@@ -21,75 +37,271 @@ mymap.addLayer(tileLayer);
 
 mymap.zoomControl.setPosition('bottomright');
 
-var popup = L.popup();
+//global variable
+let popup = L.popup();
 
+
+
+  
 //=========================================================================================================
 //conerting miliseconds into human readable 
-const timeConvert = data =>{
+/* const timeConvert = data =>{
     data = parseInt(data+'000');
     const dateObject = new Date(data);
     const humanDateFormat = dateObject.toLocaleString("en-GB", {dateStyle: "short"});
     const humanTimeFormat = dateObject.toLocaleString("en-GB", {timeStyle: "short"});
     return {humanDateFormat, humanTimeFormat};
+} */
+
+//=========================================================================================================
+//function to chaange sidebar contents
+const sidebarContents = function(results){
+    console.log("results=============================");
+    console.log(results);
+    let allImg = [];
+    let imgTop = `https://farm${results[3].photos.photo[0].farm}.staticflickr.com/${results[3].photos.photo[0].server}/${results[3].photos.photo[0].id}_${results[3].photos.photo[0].secret}_b.jpg`;
+    let src = `http://openweathermap.org/img/wn/${results[0].list[0].weather[0].icon}@2x.png`;
+    let images = results[4].photos.photo;
+    if(results=="undefined"){
+        $(".sidebar").html("change location no data found for these coordinates");    
+    } else{
+        $(".imgTop").attr("src", imgTop);
+        $(".area").html(results[0].list[0].name);
+        $(".weatherIcon").attr("src", src);
+        $(".tempDesc").html(results[0].list[0].weather[0].description.toLowerCase()+" ");
+        $(".temp").html(temp);
+        $(".time").html(date);
+        $(".facts").html(results[1].geonames[0].summary);
+        images.forEach(img =>{
+            let imgUrl = `https://farm${img.farm}.staticflickr.com/${img.server}/${img.id}_${img.secret}_b.jpg`;
+            //$(`<img src=${imgUrl}>`).appendTo('.gallery');
+            allImg.push(`<img src=${imgUrl} />`);
+        });
+        console.log(allImg);
+        $(".gallery").html(allImg);
+    }
+    
 }
 
 //=========================================================================================================
 //popup card for weather to display on each click
 const clickPopup = function(data){
-       let html = `
-                <div class="container-fluid">
-                    <div class="row justify-content-center">
-                        <div class="card1 col-sm-12 col-xs-12">
-                            <div class="d-flex">
-                            <h6 class="flex-grow-1">${data[0].list[0].name}</h6>
-                            <h6>${timeConvert(data[0].list[0].dt).humanTimeFormat}</h6>
-                            </div>
-                            <div class="d-flex flex-column temp mt-5 mb-3"> 
-                                <h3 class="mb-0 font-weight-bold" id="heading"> ${(data[0].list[0].main.temp - 273.15).toFixed(2)}° C </h3> <span class="small grey">${data[0].list[0].weather[0].description}</span>
-                            </div>
-                            <div class="d-flex">
-                                <div class="temp-details flex-grow-1">
-                                    <p class="my-1"> <img src="https://i.imgur.com/B9kqOzp.png" height="17px"> <span> ${(data[0].list[0].wind.speed*3.60).toFixed(2)} km/h </span> </p>
-                                    <p class="my-1"> <i class="fa fa-tint mr-2" aria-hidden="true"></i> <span> ${data[0].list[0].main.humidity}% Humidity</span> </p>
-                                    
-                                </div>
-                                <div> <img class="weatherimg" src="http://openweathermap.org/img/wn/${data[0].list[0].weather[0].icon}@4x.png" > </div>
-                            </div>
-            
-                        </div>
-                    </div>
+
+    var city = data[0].list[0].name.toUpperCase();
+    let cTemp = Math.round(data[0].list[0].main.temp_max - 273.15);
+    let fTemp = Math.round((data[0].list[0].main.temp_max - 273.16) * 1.8 + 32);
+    temp = Math.round(cTemp) + "&deg;C | " + Math.round(fTemp) + "&deg;F";
+    var desc = data[0].list[0].weather[0].description;
+    date = new Date();
+
+    var months = [
+      "January",
+      "February",
+      "March",  
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ];
+
+    var weekday = new Array(7);
+    weekday[0] = "Sunday";
+    weekday[1] = "Monday";
+    weekday[2] = "Tuesday";
+    weekday[3] = "Wednesday";
+    weekday[4] = "Thursday";
+    weekday[5] = "Friday";
+    weekday[6] = "Saturday";
+
+    let font_color;
+    let bg_color;
+    if (cTemp > 25) {
+      font_color = "#fff";
+      bg_color = "#ff9090";
+    } else {
+      font_color = "#fff";
+      bg_color = "#9899a0";
+    }
+    let weathercon;
+    if (data[0].list[0].weather[0].main == "Sunny" || data[0].list[0].weather[0].main == "sunny") {
+      /* $(".weathercon").html(
+        "<i class='fas fa-sun' style='color: #d36326;'></i>"
+      ); */
+        weathercon = "<i class='fas fa-sun' style='color: #d36326;'></i>";
+    } else {
+        weathercon = "<i class='fas fa-cloud' style='color: #44c3de;'></i>";
+      /* $(".weathercon").html(
+        "<i class='fas fa-cloud' style='color: #44c3de;'></i>"
+      ); */
+    }
+
+    let minutes =
+      date.getMinutes() < 11 ? "0" + date.getMinutes() : date.getMinutes();
+    date =
+      weekday[date.getDay()] +
+      " | " +
+      months[date.getMonth()].substring(0, 3) +
+      " " +
+      date.getDate() +
+      " | " +
+      date.getHours() +
+      ":" +
+      minutes;
+  
+    let html = `
+    <div class='box'>
+    
+    
+        <div class='wave -one'></div>
+        <div class='wave -two'></div>
+        <div class='wave -three'></div>
+        <div>
+
+            <div class="flexing">
+         
+                <div><img class="flexingcontent aa" src="http://openweathermap.org/img/wn/${data[0].list[0].weather[0].icon}@2x.png" > </div>
+                <div class="flexcol">
+                <h2 class="temp" >${temp}</h2> 
+                <p class="temp">${data[0].list[0].weather[0].description}</p> 
                 </div>
+                
+            </div>
             
-      `;
+            <div class="flexing"> 
+                <h2 class="location">${city}</h2>
+                <p class="date">${date}</p>
+            </div>
+            
+            <div class="flexing"> 
+                <h5 class="heading"><strong>${data[2].name} (${data[2].nativeName})</strong></h5>
+                
+            </div>
+            <div class="margintop">
+                <div class="flexing"> 
+                <p class="leftalign"><strong>Capital: </strong>${data[2].capital}</p>
+                <p class="leftalign"><strong>Population: </strong>${data[2].population}</p>
+                </div>
+                <div class="flexing"> 
+                <p class="leftalign"><strong>Area: </strong>${data[2].area}</p>
+                <p class="leftalign"><strong>Currency: </strong>${data[2].currencies[0].name}</p>
+                </div>
+                <div class="flexing"> 
+                <img class="flag" src=${data[2].flag} >
+                </div>
+                <div class="flexing"> 
+                
+                </div>
+
+
+            </div>
+        
+
+        </div>
+      
+    </div>
+    
+`;
+
     
     return html;
 }
 
 //=========================================================================================================
 //weather apis ajax call
-const ajaxWeather = (latLng) =>{
-    console.log(latLng);
-    $.ajax({
+const ajaxWeather = (latLng, countryCode=null, country=null, capital=null) =>{
+    if(mymap.hasLayer(markers)){
+        mymap.removeLayer(markers);
+    }
+    
+      $.ajax({
         url: "./libs/php/apis.php",
         type: "POST",
         data: {
             
             isoa3: latLng,
-            isoa2: $("select").val(),
+            isoa2: countryCode,
+            country: country,
             lat: latLng[0],
             lng: latLng[1],
+            capital: capital
             
         },
         dataType: "json",
         success: function(results){
             if (results.status.name == "ok"){
-                console.log(results);
                 let data = results.apisData;
+                console.log("//////////");
+                console.log(data);
+               /*  
+                if(countryCode == "PS"){
+                    latLng = [31.5, 34.4667] ;
+                } */
+
+                switch(countryCode == "PS"){
+                    case "PS":
+                        latLng = [31.5, 34.4667];
+                        break;
                 
+                    case "PK":
+                        latLng = [33.693056, 73.063889];
+                        break;
+                }
+
+                let features = data[5].features;
+                featureGroup = L.featureGroup();
+                markers = new L.MarkerClusterGroup();
+
+                /* let customMarker = L.AwesomeMarkers.icon({
+                    icon: 'fa-coffee',
+                    markerColor: 'green',
+                    prefix: 'fa',
+                    iconColor: 'white',
+                    marginTop: "10px"
+                  }); */
+
+                  var myIcon = L.icon({
+                    iconUrl: './libs/images/marker-32.png',
+                    iconSize: [32, 32],
+                    iconAnchor: [22, 94],
+                    popupAnchor: [-3, -76],
+                    color: "green"
+                    /* shadowUrl: 'my-icon-shadow.png',
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94] */
+                });
+                      
+                  //L.marker([34.52,69.17], {icon: redMarker}).addTo(mymap);
+                               
+                features.forEach(feature=>{
+                let lat = feature.geometry.coordinates[1];
+                let lng = feature.geometry.coordinates[0];
+                let name = feature.properties.name;
+                //var marker = new L.Marker([lat, lng]).bindPopup(name);
+                customMarker = new L.Marker([lat, lng], {icon: myIcon}).bindPopup(name);
+                
+                featureGroup.addLayer(customMarker);  
+                markers.addLayer(featureGroup);
+                //featureGroup.setStyle({color:'pink',opacity:.5});
+                
+                });
+
+                mymap.addLayer(markers);
+                //featureGroup.bindPopup("Feature Group");
+                let latData = data[0].list[0].coord.lat;
+                let lngData = data[0].list[0].coord.lon;
+
                 popup
-                .setLatLng(latLng)
+                .setLatLng([latData, lngData])
                 .setContent(clickPopup(data))
                 .openOn(mymap);
+
+                //sidebar function calling
+                sidebarContents(data);
             }
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -102,19 +314,23 @@ const ajaxWeather = (latLng) =>{
 //==============================================================================================
 
 //catching select value from dropdown country list
-$("select").click(function(){
 
+const countryData = function(a=null){
+    if(mymap.hasLayer(border)){
+        mymap.removeLayer(border);
+    }
+    
     let valIsoa3 = $(this).find(':selected').data('isoa3');
     let valIsoa2 = $("select :selected").val();
     let valCountry = $("select :selected").text();
     
-    var countryLayer = L.geoJSON().addTo(mymap);
-    mymap.addLayer(countryLayer);
+    border = L.geoJSON().addTo(mymap);
+    mymap.addLayer(border);
     
   
     //ajax call when selcting countries
     $.ajax({
-        url: "./libs/php/areas.php",
+        url: "./libs/php/countryData.php",
         type: "POST",
         data: {
             
@@ -126,10 +342,18 @@ $("select").click(function(){
         dataType: "json",
         success: function(results){
             if (results.status.name == "ok"){
+                console.log("Country api results=========>");
                 console.log(results);
                 let countryFeatures = results["countryCoord"];
-                countryLayer.addData(countryFeatures);
-                mymap.fitBounds(countryLayer.getBounds());
+                border.addData(countryFeatures);
+                mymap.fitBounds(border.getBounds());
+                
+                let latLng = [results.apisCountryData[0][1][0].latitude, results.apisCountryData[0][1][0].longitude];
+                let country = results.apisCountryData[0][1][0].name;
+                let capital = results.apisCountryData[0][1][0].capitalCity;
+                ajaxWeather(latLng, valIsoa2, country, capital);
+                
+                
                 
             }
         },
@@ -138,14 +362,25 @@ $("select").click(function(){
             console.log("No data coming from areas.php file");
         }
     });
-});
+}
+
+//=========================================================================================================
+//onmap click event calling function
+$("select").click(countryData);
 
 //=========================================================================================================
 //onmap click calling the following function
 function onMapClick(e) {
    let latLng = [e.latlng['lat'], e.latlng['lng']];
    
-ajaxWeather(latLng);
+   $.get("http://api.geonames.org/countryCodeJSON?lat="+latLng[0]+"&lng="+latLng[1]+"&username=geonamesag", function(response) {
+        
+    /* let loc = response.loc.split(',');
+    let country = response.country;
+    mapLocation(loc[0], loc[1], country); */
+    ajaxWeather(latLng, response.countryCode);    
+}, "jsonp");
+
 }
 
 //=========================================================================================================
@@ -193,7 +428,7 @@ $.ajax({
 
 //=========================================================================================================
 //setting up the map view according to provided Lat/Lng
-const mapLocation = (lat, lng) =>{
+const mapLocation = (lat, lng, country) =>{
    let latLng = [lat, lng];
    mymap.setView([lat, lng], 10);
 
@@ -209,7 +444,7 @@ circle.bindPopup("Current Location");
 
 //calling the ajaxWeather function and passing an array of lat/lng to find my location
 
-ajaxWeather(latLng);
+ajaxWeather(latLng, country);
 }
 
 // =========================================================================================================
@@ -217,9 +452,10 @@ ajaxWeather(latLng);
 function location() {
     
     $.get("https://ipinfo.io?token="+ipinfoTokenKey, function(response) {
-        let loc = response.loc.split(',');
-        
-        mapLocation(loc[0], loc[1]);
+        //console.log(response);    
+    let loc = response.loc.split(',');
+    let country = response.country;
+    mapLocation(loc[0], loc[1], country);
         
 }, "jsonp");
 
@@ -228,6 +464,19 @@ function location() {
 // =========================================================================================================
 //calling function to get current location
 location();
+
+// =========================================================================================================
+//button to move to current location
+L.easyButton( {
+    states:[
+      {
+        icon: '<span class="target">&target;</span>',
+        onClick: location
+      }
+    ]
+  })
+  .setPosition("bottomright")
+  .addTo(mymap);
 
 // ===========================================================================================================
 // error callback function if an issue findind currentPosition

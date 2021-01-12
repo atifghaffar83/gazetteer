@@ -8,15 +8,27 @@
 <!--         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
  -->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <!-- bootstrap css link -->
+       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+       
+        
+       
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <!-- <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico"> -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
-       
-        <!-- Make sure you put this AFTER Leaflet's CSS -->
-       <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-
-       <!-- bootstrap css link -->
-       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css" integrity="sha512-BBToHPBStgMiw0lD4AtkRIZmdndhB6aQbXpX7omcrXeG2PauGBl2lzq2xUZTxaLxYz5IDHlmneCZ1IJ+P3kYtQ==" crossorigin="anonymous" />
+        <link rel="stylesheet" href="libs/css/leaflet.extra-markers.min.css" />
+        <link rel="stylesheet" href="libs/css/leaflet.awesome-markers.css" />
         
+       
+       
+       <!-- fontawesome cdn link -->
+       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
+       
+
        <!-- custom css file link -->
         <link rel="stylesheet" href="libs/css/style.css">
        
@@ -25,19 +37,69 @@
     </head>
 
     <body class="">
-
-        <div id="mapid">
-            
+        <div>
+            <!-- sidebar contents -->
+            <div class="sidebar">
+                <div class="headerimg">
+                  <button class="imgbtn">
+                    <img class="imgTop" src="https://cdn.pixabay.com/photo/2017/03/09/12/31/error-2129569_1280.jpg" />
+                  </button>
+                  
+                </div>
+                <div class="sideContent">
+                    <div>
+                        <h1 class="area"></h1>
+                        <div class="sideTop">
+                            <div class="sideWeather">
+                            <div><img class="weatherIcon" src="" ><span class="tempDesc"></span><span class="temp"></span> </div>
+                            <div><span class="time"></span> </div>
+                            </div>
+                            
+                        </div>
+                        <hr class="hrTop">		
+                    </div>
+                    <div>
+                        <h2>Quick Facts</h2>
+                        <span class="facts"></span>
+                        <hr class="hrborder">		
+                    </div>
+                    <div>
+                        <h2>Gallery</h2>
+                        <div class="gallery"></div>
+                        <hr class="hrborder">		
+                    </div>
+                </div>
+                  
+                  
+            </div>
+            <div id="mapid">
+                
+            </div>
+            <div id="countryList" class="selSize">
+                
+                <select class="form-select mb-3" aria-label="Default .form-select-lg example" id="options" onmousedown="if(this.options.length>6){this.size=5;}"  onchange='this.size=0;' onblur="this.size=0;">
+                    <option selected>Select country</option>
+                </select>
+                <button class="sidebar-toggle"><i class="fas fa-bars fa-lg"></i></button>
+            </div>
+           
         </div>
-        <div id="countryList" class="selSize">
-            <select class="form-select mb-3" aria-label="Default .form-select-lg example" id="options" onmousedown="if(this.options.length>6){this.size=5;}"  onchange='this.size=0;' onblur="this.size=0;">
-                <option selected>Select country</option>
-            </select>
-        </div>
+        
+        
        
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+         <!-- Make sure you put this AFTER Leaflet's CSS -->
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js" integrity="sha512-MQlyPV+ol2lp4KodaU/Xmrn+txc1TP15pOBF/2Sfre7MRsA/pB4Vy58bEqe9u7a7DczMLtU5wT8n7OblJepKbg==" crossorigin="anonymous"></script>
+        <script src="libs/js/leaflet.awesome-markers.js"></script>
+        <script src="libs/js/leaflet.extra-markers.js"></script>
+        <!-- fontawesome js files -->
+        <script src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
+        <script src="https://kit.fontawesome.com/9de24c6344.js" crossorigin="anonymous"></script>
+        
         <script type='text/javascript' src='config.js'></script>
         <script src="libs/js/app.js"></script>
     </body>

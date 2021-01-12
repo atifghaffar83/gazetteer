@@ -1,0 +1,21 @@
+{
+  "name": "gazetteer",
+  "version": "1.0.0",
+  "description": "map app",
+  "main": "config.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atifghaffar83/gazetteer.git"
+  },
+  "author": "atifG",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/atifghaffar83/gazetteer/issues"
+  },
+  "homepage": "https://github.com/atifghaffar83/gazetteer#readme"
+}
