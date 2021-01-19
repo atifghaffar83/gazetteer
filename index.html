@@ -7,9 +7,9 @@
         <!-- google fonts -->
 <!--         <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
- -->
-        <link rel="preconnect" href="https://fonts.gstatic.com">
+ -->    <link rel="preconnect" href="https://fonts.gstatic.com">
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
         <!-- bootstrap css link -->
        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
        
@@ -60,7 +60,7 @@
                     </div>
                     <div>
                         <h2>Quick Facts</h2>
-                        <span class="facts"></span>
+                        <span class="facts"></span><a class="wikilink" href="" target="_blank"><span class="more">more</span></a>
                         <hr class="hrborder">		
                     </div>
                     <div>
@@ -77,8 +77,9 @@
             </div>
             <div id="countryList" class="selSize">
                 
-                <select class="form-select mb-3" aria-label="Default .form-select-lg example" id="options" onmousedown="if(this.options.length>6){this.size=5;}"  onchange='this.size=0;' onblur="this.size=0;">
-                    <option selected>Select country</option>
+                
+                <select class="form-select mb-3" aria-label="Default form-select-lg example" id="options">
+                    <option selected="true" disabled="disabled">Select country</option>
                 </select>
                 <button class="sidebar-toggle"><i class="fas fa-bars fa-lg"></i></button>
             </div>

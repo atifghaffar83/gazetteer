@@ -1,10 +1,9 @@
 <?php
-include('../../config.php');
 
 $curl = curl_init();
 
 curl_setopt_array($curl, [
-	CURLOPT_URL => "https://andruxnet-world-cities-v1.p.rapidapi.com/?query=paris&searchby=city",
+	CURLOPT_URL => "https://world-geo-data.p.rapidapi.com/countries/GB/geojson",
 	CURLOPT_RETURNTRANSFER => true,
 	CURLOPT_FOLLOWLOCATION => true,
 	CURLOPT_ENCODING => "",
@@ -13,8 +12,8 @@ curl_setopt_array($curl, [
 	CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 	CURLOPT_CUSTOMREQUEST => "GET",
 	CURLOPT_HTTPHEADER => [
-		"x-rapidapi-host: andruxnet-world-cities-v1.p.rapidapi.com",
-		"x-rapidapi-key: ".$apikeyXRapid
+		"x-rapidapi-host: world-geo-data.p.rapidapi.com",
+		"x-rapidapi-key: NGLh9X4rmymshnef3f80R8EnIyCZp1HW5sEjsnCZRNzUYggISu"
 	],
 ]);
 
