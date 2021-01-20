@@ -61,7 +61,7 @@ $URLs = array(
     //photos keyword and latlng
     "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=".$apikeyFlickr."&lat=".$_REQUEST['lat']."&lon=".$_REQUEST['lng']."&per_page=10&page=10&format=json&nojsoncallback=1&radius=20&radius_units=mi",
     //timezone api
-    "http://api.geonames.org/timezoneJSON?formatted=true&lat=".$_REQUEST['lat']."&lng=".$_REQUEST['lng']."&username=".$usernameGeoname."&style=full",
+    //"http://api.geonames.org/timezoneJSON?formatted=true&lat=".$_REQUEST['lat']."&lng=".$_REQUEST['lng']."&username=".$usernameGeoname."&style=full",
     //ok museums latlng
     //"https://api.opentripmap.com/0.1/en/places/radius?radius=10000&lon=".$_REQUEST['lng']."&lat=".$_REQUEST['lat']."&kinds=museums,monuments_and_memorials,interesting_places&format=geojson&apikey=".$apikeyOpenTripMap,
     //ok monuments and memorials details

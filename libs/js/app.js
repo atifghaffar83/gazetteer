@@ -3,6 +3,7 @@ $(document).ready(()=>{
       let tileLayerKey = config.tileLayer;
       let ipinfoTokenKey = config.ipinfoToken;
       let userGeoname = config.usernameGeoname;
+      let mapboxkey = config.mapbox;
       let border;
       let circle;
       let featureGroup;
@@ -16,6 +17,7 @@ $(document).ready(()=>{
       let valCountry;
       let countryCode;
       let latLng;
+      let control;
   
   //=========================================================================================================
   //sidebar function
@@ -30,7 +32,7 @@ $(document).ready(()=>{
   
   //=========================================================================================================
   //Setting up map and tiles
-      var mymap = L.map('mapid');
+       
       let tileLayer = L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key='+tileLayerKey, {
       attribution: 'Map data &copy; <a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
       maxZoom: 16,
@@ -42,8 +44,27 @@ $(document).ready(()=>{
       accessToken: tileLayerKey
   });
   
-  mymap.addLayer(tileLayer);
-  
+  let mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+		mbUrl = `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${mapboxkey}`;
+
+	let grayscale   = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
+		streets  = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
+
+let mymap = L.map('mapid',{
+
+  //layers: [tileLayer, grayscale, streets]
+  layers: [tileLayer]
+});
+
+//  mymap.addLayer(tileLayer);
+
+let baseLayers = {
+  "TileLayer" : tileLayer,
+  "Grayscale": grayscale,
+  "Streets": streets
+};
+
   mymap.zoomControl.setPosition('bottomright');
   
   //global variable
@@ -89,7 +110,7 @@ $(document).ready(()=>{
           $(".weatherIcon").attr("src", src);
           $(".tempDesc").html(results[0].list[0].weather[0].description.toLowerCase()+" ");
           $(".temp").html(temp);
-          $(".time").html(date);
+          //$(".time").html(date);
           $(".facts").html(results[1].geonames[0].summary);
           $(".wikilink").attr("href", "https://"+results[1].geonames[0].wikipediaUrl); 
           images.forEach(img =>{
@@ -137,12 +158,6 @@ $(document).ready(()=>{
       let fTemp = Math.round((weather.list[0].main.temp - 273.16) * 1.8 + 32);
       temp = Math.round(cTemp) + "&deg;C | " + Math.round(fTemp) + "&deg;F";
       var desc = weather.list[0].weather[0].description;
-
-      //date = new Date(`${weather.list[0].dt_txt}`);
-      date = new Date();
-      let hours =  date.getHours() + data[5].gmtOffset;
-      date.setHours(hours);
-      console.log(date.getHours());
   
       let font_color;
       let bg_color;
@@ -166,19 +181,6 @@ $(document).ready(()=>{
         ); */
       }
   
-      let minutes =
-        date.getMinutes() < 11 ? "0" + date.getMinutes() : date.getMinutes();
-      date =
-        weekday[date.getDay()] +
-        " | " +
-        months[date.getMonth()].substring(0, 3) +
-        " " +
-        date.getDate() +
-        " | " +
-        date.getHours() +
-        ":" +
-        minutes;
-    
       let html = `
       <div class='box'>
       
@@ -200,7 +202,8 @@ $(document).ready(()=>{
               
               <div class="flexing"> 
                   <h2 class="location">${city}</h2>
-                  <p class="date">${date}</p>
+                  <p class="llDate"></p>
+                  
               </div>
               
               <div class="flexing"> 
@@ -240,6 +243,9 @@ $(document).ready(()=>{
   //=========================================================================================================
   // featues ajax call
   const features = (latLng, countryCode=null, country=null, capital=null)=>{
+    if (control != undefined) {
+      control.remove(mymap);
+      }
     $.ajax({
       url: "./libs/php/parkApi.php",
       type: "POST",
@@ -258,6 +264,28 @@ $(document).ready(()=>{
         console.log("featues results");
         console.log(results);
         let features = results.features[0].features;
+        let geonameTime = results.features[1].gmtOffset;
+
+        date = new Date();
+        let hours =  date.getHours() + geonameTime;
+        date.setHours(hours);
+
+        let minutes =
+        date.getMinutes() < 11 ? "0" + date.getMinutes() : date.getMinutes();
+        date =
+        weekday[date.getDay()] +
+        " | " +
+        months[date.getMonth()].substring(0, 3) +
+        " " +
+        date.getDate() +
+        " | " +
+        date.getHours() +
+        ":" +
+        minutes;
+      $(".llDate").html(date);
+      $(".time").html(date);
+      
+
 
         var myIcon = L.icon({
           iconUrl: './libs/images/marker-32.png',
@@ -277,14 +305,21 @@ $(document).ready(()=>{
           let lat = feature.geometry.coordinates[1];
           let lng = feature.geometry.coordinates[0];
           let name = feature.properties.name;
-          let customMarker = new L.Marker([lat, lng], {icon: myIcon}).bindPopup(`<div class="markpopup"><strong>Lat/Lon</strong> (${lat} / ${lng})<br>${name}</div`);
+          let customMarker = new L.Marker([lat, lng], {icon: myIcon}).bindPopup(`<div class="markpopup"><strong>Lat/Lon</strong> (${lat} / ${lng})<br><strong>${name}</strong></div`);
           featureGroup.addLayer(customMarker);  
           markers.addLayer(featureGroup);
         //featureGroup.setStyle({color:'pink',opacity:.5});
                   
       });
   
+      //mymap.addLayer(markers);
+
+      let overlays = {
+        "Landmarks": markers
+      };
+      control = L.control.layers(baseLayers, overlays);
       mymap.addLayer(markers);
+      control.addTo(mymap);
 
       },
       error: function(jqXHR, textStatus, errorThrown) {
@@ -372,35 +407,6 @@ $(document).ready(()=>{
                   }
                   sidebarContents(data);
                   features(latLng, countryCode, country, capital);
-                  /* let customMarker = L.AwesomeMarkers.icon({
-                      icon: 'fa-coffee',
-                      markerColor: 'green',
-                      prefix: 'fa',
-                      iconColor: 'white',
-                      marginTop: "10px"
-                    }); */
-  
-                  
-
-                  /* let allFeatures = data[6].features; 
-                  featureGroup = L.featureGroup();
-                  markers = new L.MarkerClusterGroup();
-
-                  console.log("allFeatures");
-                  console.log(allFeatures);      
-
-                  allFeatures.forEach(feature=>{
-                  let lat = feature.geometry.coordinates[1];
-                  let lng = feature.geometry.coordinates[0];
-                  let name = feature.properties.name;
-                  let customMarker = new L.Marker([lat, lng], {icon: myIcon}).bindPopup(`<div class="markpopup"><strong>Lat/Lon</strong> (${lat} / ${lng})<br>${name}</div`);
-                  featureGroup.addLayer(customMarker);  
-                  markers.addLayer(featureGroup);
-                  //featureGroup.setStyle({color:'pink',opacity:.5});
-                  
-                  });
-  
-                  mymap.addLayer(markers); */
                   
                   popup
                   .setLatLng(latLng)
@@ -670,6 +676,8 @@ $(document).ready(()=>{
   }
   locationNav();
   
+
+
   // =========================================================================================================
   //button to move to current location
   L.easyButton( {
@@ -695,3 +703,4 @@ $(document).ready(()=>{
     });
   
   });
+  
