@@ -357,7 +357,8 @@ position: absolute;
     font-size: .875rem;
     font-weight: 400;
     line-height: 16px;
-    max-width: 300px;
+    /* max-width: 300px; */
+    max-width: 100%;
     color: rgba(0, 0, 0, 0.54);
 
 }
@@ -376,4 +377,58 @@ position: absolute;
 .markpopup{
   font-size: 0.85rem;
   text-align: center;
+}
+
+/*sidebar weather forecast section*/
+.wfcast{
+  display: flex;
+  margin: 6px auto;
+}
+.forecast{
+  transition-duration: 200ms,200ms,200ms;
+  transition-property: background-image,border,font-weight;
+  -webkit-transition-duration: 200ms,200ms,200ms;
+  -webkit-transition-property: background-image,border,font-weight;
+  border: 1px solid transparent;
+  height: 90px;
+  line-height: 1;
+  text-align: center;
+  width: 73px;
+  margin-right: 6px;
+  
+}
+
+.fdld {
+  line-height: 15px;
+  padding-top: 7px;
+}
+
+.fimg {
+  display: inline-block;
+}
+
+.fmsize {
+  height: 48px;
+  margin: 1px 4px 0;
+  width: 48px;
+}
+
+.fhts {
+  display: inline-block;
+  padding-right: 5px;
+}
+.fht {
+  color: #878787 !important;
+}
+.ftemp {
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 15px;
+}
+
+.flts {
+  display: inline-block;
+}
+.fdcolor {
+  color: #bababa;
 }

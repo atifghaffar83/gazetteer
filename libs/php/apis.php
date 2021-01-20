@@ -45,7 +45,8 @@ switch($_REQUEST['isoa2']){
 //open weather api end points
 $URLs = array( 
     //openeather Api
-    "https://api.openweathermap.org/data/2.5/find?lat=" . $_REQUEST['lat'] . "&lon=" . $_REQUEST['lng'] . "&cnt=1&appid=".$appidOpenWeather,
+    //"https://api.openweathermap.org/data/2.5/find?lat=" . $_REQUEST['lat'] . "&lon=" . $_REQUEST['lng'] . "&cnt=1&appid=".$appidOpenWeather,
+    "http://api.openweathermap.org/data/2.5/forecast?lat=" . $_REQUEST['lat'] . "&lon=" . $_REQUEST['lng'] . "&appid=".$appidOpenWeather,
     //? working but not sure useful
     //ok earthquake
     //"http://api.geonames.org/earthquakesJSON?formatted=true&north=55.0583836008072&south=47.2701236047002&east=15.0418156516163&west=5.8663152683722&username=".$usernameGeoname."&style=full",
@@ -62,12 +63,13 @@ $URLs = array(
     //timezone api
     "http://api.geonames.org/timezoneJSON?formatted=true&lat=".$_REQUEST['lat']."&lng=".$_REQUEST['lng']."&username=".$usernameGeoname."&style=full",
     //ok museums latlng
-    "https://api.opentripmap.com/0.1/en/places/radius?radius=10000&lon=".$_REQUEST['lng']."&lat=".$_REQUEST['lat']."&kinds=museums,monuments_and_memorials,interesting_places&format=geojson&apikey=".$apikeyOpenTripMap,
+    //"https://api.opentripmap.com/0.1/en/places/radius?radius=10000&lon=".$_REQUEST['lng']."&lat=".$_REQUEST['lat']."&kinds=museums,monuments_and_memorials,interesting_places&format=geojson&apikey=".$apikeyOpenTripMap,
     //ok monuments and memorials details
     //"https://api.opentripmap.com/0.1/en/places/radius?radius=3000&lon=".$_REQUEST['lng']."&lat=".$_REQUEST['lat']."&kinds=monuments_and_memorials&format=json&apikey=".$apikeyOpenTripMap,
     //intresting plaxes using latlng
     //"https://api.opentripmap.com/0.1/en/places/radius?radius=3000&lon=".$_REQUEST['lng']."&lat=".$_REQUEST['lat']."&kinds=interesting_places&format=json&apikey=".$apikeyOpenTripMap,
-    
+    //weather forecast 5days 3 hours
+    //"http://api.openweathermap.org/data/2.5/forecast?lat=" . $_REQUEST['lat'] . "&lon=" . $_REQUEST['lng'] . "&appid=".$appidOpenWeather,
     
     
 );
@@ -81,30 +83,46 @@ function apisLatLng($urlApis){
     $mh = curl_multi_init();
     $total = 100;
     $t1 = microtime(true);
-
+/* 
     $i = 0;
     foreach($urlApis as $url) {
 
     $ch[$i] = curl_init();
-
-    curl_setopt($ch[$i], CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch[$i], CURLOPT_HEADER, 0);
-    curl_setopt($ch[$i], CURLOPT_RETURNTRANSFER, true);
-    curl_multi_add_handle($mh, $ch[$i]);
+    
     curl_setopt($ch[$i], CURLOPT_URL, $url);
+    curl_setopt($ch[$i], CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch[$i], CURLOPT_HEADER, 0);
+    curl_setopt($ch[$i], CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch[$i], CURLOPT_TIMEOUT, 0);
+    
+    curl_multi_add_handle($mh, $ch[$i]);
+    
     $i ++;
+    } */
+
+    
+    foreach($urlApis as $i => $url) {
+
+    $ch[$i] = curl_init();
+    
+    curl_setopt($ch[$i], CURLOPT_URL, $url);
+    curl_setopt($ch[$i], CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch[$i], CURLOPT_HEADER, 0);
+    curl_setopt($ch[$i], CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch[$i], CURLOPT_TIMEOUT, 0);
+    
+    curl_multi_add_handle($mh, $ch[$i]);
+    
     }
 
     $active = null;
 
     do {
-    $mrc = curl_multi_exec($mh, $active);
+    curl_multi_exec($mh, $active);
     //usleep(100); // Maybe needed to limit CPU load (See P.S.)
     } while ($active);
 
     $content = array();
-
-    $i = 0;
 
     foreach ($ch AS $i => $c) {
     $content[$i] = json_decode(curl_multi_getcontent($c));

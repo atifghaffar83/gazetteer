@@ -85,7 +85,7 @@ $(document).ready(()=>{
           $(".sidebar").html("change location no data found for these coordinates");    
       } else{
           $(".imgTop").attr("src", imgTop);
-          $(".area").html(results[0].list[0].name);
+          $(".area").html(results[0].city.name);
           $(".weatherIcon").attr("src", src);
           $(".tempDesc").html(results[0].list[0].weather[0].description.toLowerCase()+" ");
           $(".temp").html(temp);
@@ -103,42 +103,46 @@ $(document).ready(()=>{
       
   }
   
+  var months = [
+    "January",
+    "February",
+    "March",  
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
+
+  var weekday = new Array(7);
+  weekday[0] = "Sunday";
+  weekday[1] = "Monday";
+  weekday[2] = "Tuesday";
+  weekday[3] = "Wednesday";
+  weekday[4] = "Thursday";
+  weekday[5] = "Friday";
+  weekday[6] = "Saturday";
+
+
   //=========================================================================================================
   //popup card for weather to display on each click
   const clickPopup = function(data){
-  
-      var city = data[0].list[0].name.toUpperCase();
-      let cTemp = Math.round(data[0].list[0].main.temp_max - 273.15);
-      let fTemp = Math.round((data[0].list[0].main.temp_max - 273.16) * 1.8 + 32);
+    let weather = data[0];
+      var city = weather.city.name.toUpperCase();
+      let cTemp = Math.round(weather.list[0].main.temp - 273.15);
+      let fTemp = Math.round((weather.list[0].main.temp - 273.16) * 1.8 + 32);
       temp = Math.round(cTemp) + "&deg;C | " + Math.round(fTemp) + "&deg;F";
-      var desc = data[0].list[0].weather[0].description;
+      var desc = weather.list[0].weather[0].description;
+
+      //date = new Date(`${weather.list[0].dt_txt}`);
       date = new Date();
       let hours =  date.getHours() + data[5].gmtOffset;
       date.setHours(hours);
       console.log(date.getHours());
-      var months = [
-        "January",
-        "February",
-        "March",  
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-      ];
-  
-      var weekday = new Array(7);
-      weekday[0] = "Sunday";
-      weekday[1] = "Monday";
-      weekday[2] = "Tuesday";
-      weekday[3] = "Wednesday";
-      weekday[4] = "Thursday";
-      weekday[5] = "Friday";
-      weekday[6] = "Saturday";
   
       let font_color;
       let bg_color;
@@ -150,7 +154,7 @@ $(document).ready(()=>{
         bg_color = "#9899a0";
       }
       let weathercon;
-      if (data[0].list[0].weather[0].main == "Sunny" || data[0].list[0].weather[0].main == "sunny") {
+      if (weather.list[0].weather[0].main == "Sunny" || weather.list[0].weather[0].main == "sunny") {
         /* $(".weathercon").html(
           "<i class='fas fa-sun' style='color: #d36326;'></i>"
         ); */
@@ -186,10 +190,10 @@ $(document).ready(()=>{
   
               <div class="flexing">
            
-                  <div><img class="flexingcontent aa" src="https://openweathermap.org/img/wn/${data[0].list[0].weather[0].icon}@2x.png" > </div>
+                  <div><img class="flexingcontent aa" src="https://openweathermap.org/img/wn/${weather.list[0].weather[0].icon}@2x.png" > </div>
                   <div class="flexcol">
                   <h2 class="temp" >${temp}</h2> 
-                  <p class="temp">${data[0].list[0].weather[0].description}</p> 
+                  <p class="temp">${weather.list[0].weather[0].description}</p> 
                   </div>
                   
               </div>
@@ -234,6 +238,62 @@ $(document).ready(()=>{
   }
   
   //=========================================================================================================
+  // featues ajax call
+  const features = (latLng, countryCode=null, country=null, capital=null)=>{
+    $.ajax({
+      url: "./libs/php/parkApi.php",
+      type: "POST",
+      data: {
+          
+          isoa3: latLng,
+          isoa2: countryCode,
+          country: country,
+          lat: latLng[0],
+          lng: latLng[1],
+          capital: capital
+          
+      },
+      dataType: "json",
+      success: function(results){
+        console.log("featues results");
+        console.log(results);
+        let features = results.features[0].features;
+
+        var myIcon = L.icon({
+          iconUrl: './libs/images/marker-32.png',
+          iconSize: [32, 32],
+          iconAnchor: [22, 94],
+          popupAnchor: [-3, -76],
+          color: "green"
+          /* shadowUrl: 'my-icon-shadow.png',
+          shadowSize: [68, 95],
+          shadowAnchor: [22, 94] */
+      });
+
+        //let allFeatures = results[0].features; 
+        featureGroup = L.featureGroup();
+        markers = new L.MarkerClusterGroup();
+        features.forEach(feature=>{
+          let lat = feature.geometry.coordinates[1];
+          let lng = feature.geometry.coordinates[0];
+          let name = feature.properties.name;
+          let customMarker = new L.Marker([lat, lng], {icon: myIcon}).bindPopup(`<div class="markpopup"><strong>Lat/Lon</strong> (${lat} / ${lng})<br>${name}</div`);
+          featureGroup.addLayer(customMarker);  
+          markers.addLayer(featureGroup);
+        //featureGroup.setStyle({color:'pink',opacity:.5});
+                  
+      });
+  
+      mymap.addLayer(markers);
+
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+      // your error code
+      console.log("No data coming from apis.php file");
+          }
+  });
+}
+  //=========================================================================================================
   //weather apis ajax call
   const ajaxWeather = (latLng, countryCode=null, country=null, capital=null) =>{
       if(mymap.hasLayer(markers)){
@@ -257,8 +317,49 @@ $(document).ready(()=>{
           success: function(results){
               if (results.status.name == "ok"){
                   let data = results.apisData;
+                  data = data.filter(Boolean);
                   console.log("\nApis Result <<<======>>>\n");
                   console.log(data);
+
+                  $(".wfcast").html("");
+                  for(i=8; i<data[0].list.length; i+=8){
+                    
+                    let content = data[0].list[i];
+
+                    let dDate = new Date(`${content.dt_txt}`);
+                    //
+                    let dDay = dDate.getDay();
+
+                    let mcTemp = Math.round(content.main.temp_max - 273.15);
+                    let mfTemp = Math.round((content.main.temp_max - 273.16) * 1.8 + 32);
+                    let lcTemp = Math.round(content.main.temp_min - 273.15);
+                    let lfTemp = Math.round((content.main.temp_min - 273.16) * 1.8 + 32);
+                    
+                 
+                    $(".wfcast").append(
+                      `<div class="forecast" data-wob-di="7" role="button" tabindex="0">
+
+                          <div class="fdcolor fdld" aria-label="Tuesday">
+                            ${weekday[dDay]}
+                          </div>
+                          <div class="fimg">
+                            <img class="fmsize" alt="Rain and snow" src="https://openweathermap.org/img/wn/${content.weather[0].icon}@2x.png" data-atf="1">
+                          </div>
+                          <div class="ftemp">
+                            <div class="fht fhts">
+                            <span class="wob_t" style="display:inline">${mcTemp}</span>
+                            <span class="wob_t" style="display:none">${mfTemp}</span>°
+                          </div>
+                          <div class="fdcolor flts">
+                            <span class="wob_t" style="display:inline">${lcTemp}</span>
+                            <span class="wob_t" style="display:none">${lfTemp}</span>°
+                          </div>
+                        
+                      </div>`
+
+                      );
+
+                  }
                
                   switch(countryCode){
                       case "PS":
@@ -269,11 +370,8 @@ $(document).ready(()=>{
                           latLng = [33.693056, 73.063889];
                           break;
                   }
-  
-                  let features = data[6].features; 
-                  featureGroup = L.featureGroup();
-                  markers = new L.MarkerClusterGroup();
-  
+                  sidebarContents(data);
+                  features(latLng, countryCode, country, capital);
                   /* let customMarker = L.AwesomeMarkers.icon({
                       icon: 'fa-coffee',
                       markerColor: 'green',
@@ -282,22 +380,19 @@ $(document).ready(()=>{
                       marginTop: "10px"
                     }); */
   
-                    var myIcon = L.icon({
-                      iconUrl: './libs/images/marker-32.png',
-                      iconSize: [32, 32],
-                      iconAnchor: [22, 94],
-                      popupAnchor: [-3, -76],
-                      color: "green"
-                      /* shadowUrl: 'my-icon-shadow.png',
-                      shadowSize: [68, 95],
-                      shadowAnchor: [22, 94] */
-                  });
-                        
-                  features.forEach(feature=>{
+                  
+
+                  /* let allFeatures = data[6].features; 
+                  featureGroup = L.featureGroup();
+                  markers = new L.MarkerClusterGroup();
+
+                  console.log("allFeatures");
+                  console.log(allFeatures);      
+
+                  allFeatures.forEach(feature=>{
                   let lat = feature.geometry.coordinates[1];
                   let lng = feature.geometry.coordinates[0];
                   let name = feature.properties.name;
-                  //var marker = new L.Marker([lat, lng]).bindPopup(name);
                   let customMarker = new L.Marker([lat, lng], {icon: myIcon}).bindPopup(`<div class="markpopup"><strong>Lat/Lon</strong> (${lat} / ${lng})<br>${name}</div`);
                   featureGroup.addLayer(customMarker);  
                   markers.addLayer(featureGroup);
@@ -305,15 +400,13 @@ $(document).ready(()=>{
                   
                   });
   
-                  mymap.addLayer(markers);
-                  console.log("\najax pk/ps "+latLng);
+                  mymap.addLayer(markers); */
+                  
                   popup
                   .setLatLng(latLng)
                   .setContent(clickPopup(data))
                   .openOn(mymap);
   
-                  //sidebar function calling
-                  sidebarContents(data);
               }
           },
           error: function(jqXHR, textStatus, errorThrown) {
@@ -391,7 +484,7 @@ $(document).ready(()=>{
   
   //=========================================================================================================
   //onmap click event calling function
-  $("select").click(countryData);
+  $("select").change(countryData);
   
   //=========================================================================================================
   //onmap click calling the following function
