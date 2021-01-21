@@ -45,7 +45,7 @@ switch($_REQUEST['isoa2']){
 //open weather api end points
 $URLs = array( 
     //ok museums latlng
-    "https://api.opentripmap.com/0.1/en/places/radius?radius=10000&lon=".$_REQUEST['lng']."&lat=".$_REQUEST['lat']."&kinds=museums,monuments_and_memorials,interesting_places&format=geojson&apikey=".$apikeyOpenTripMap,
+    "https://api.opentripmap.com/0.1/en/places/radius?radius=10000&lon=".$_REQUEST['lng']."&lat=".$_REQUEST['lat']."&kinds=museums,monuments_and_memorials,interesting_places&limit=100&format=geojson&apikey=".$apikeyOpenTripMap,
     //timezone api
     "http://api.geonames.org/timezoneJSON?formatted=true&lat=".$_REQUEST['lat']."&lng=".$_REQUEST['lng']."&username=".$usernameGeoname."&style=full",
     

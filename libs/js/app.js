@@ -541,6 +541,7 @@ const currency = (currencyCode)=>{
   function onMapClick(e) {
      latLng = [e.latlng['lat'], e.latlng['lng']];
      console.log(latLng);
+     $(".sidebar").addClass('is-closed');
       /* $.get("http://api.geonames.org/countryCodeJSON?formatted=true&lat="+latLng[0]+"&lng="+latLng[1]+"&username="+userGeoname, function(response) {
       ajaxWeather(latLng, response.countryCode);    
   }, "jsonp"); */
