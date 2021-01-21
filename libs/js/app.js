@@ -17,6 +17,8 @@ $(document).ready(()=>{
       let valCountry;
       let countryCode;
       let latLng;
+      let ccTarget;
+      let llTarget;
       let control;
   
   //=========================================================================================================
@@ -52,8 +54,8 @@ $(document).ready(()=>{
 		streets  = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
 
 let mymap = L.map('mapid',{
-
-  //layers: [tileLayer, grayscale, streets]
+  center: [51.505, -0.09],
+  zoom: 8,
   layers: [tileLayer]
 });
 
@@ -84,6 +86,42 @@ let baseLayers = {
   } */
   
   //=========================================================================================================
+//currency live rate usd to selected country
+const currency = (currencyCode)=>{
+  console.log("Currency code rate live=================");
+
+  $.ajax({
+    url: "./libs/php/currencyapi.php",
+    type: "POST",
+    data: {
+        
+        currency: currencyCode,
+        
+    },
+    dataType: "json",
+    success: function(results){
+      if (results.status.name == "ok"){}
+      let timestamp = results.currency.timestamp;
+      let cur = results.currency.quotes;
+      let currVal = Object.values(cur);
+      console.log('excng' + currVal);
+      //let xchng = cur[`USD${currencyCode}`];
+      console.log(results);
+      //console.log(xchng);
+      //console.log(timestamp);
+      let d = new Date(timestamp*1000);
+      let timeinfo = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()} @ ${d.getHours()}:${d.getMinutes()}`;
+      $(".currency").html(`1 USD in ${currencyCode} : ${currVal} (${timeinfo})`);
+        
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      // your error code
+      console.log("No data coming from currencyapi.php file");
+  }
+});
+}
+
+  //=========================================================================================================
   //function to chaange sidebar contents
   const sidebarContents = function(results){
      
@@ -109,10 +147,10 @@ let baseLayers = {
           $(".area").html(results[0].city.name);
           $(".weatherIcon").attr("src", src);
           $(".tempDesc").html(results[0].list[0].weather[0].description.toLowerCase()+" ");
-          $(".temp").html(temp);
-          //$(".time").html(date);
+          //$(".temp").html(temp);
+          currency(results[2].currencies[0].code);
           $(".facts").html(results[1].geonames[0].summary);
-          $(".wikilink").attr("href", "https://"+results[1].geonames[0].wikipediaUrl); 
+          $(".wikilink").attr("href", "https://"+results[1].geonames[0].wikipediaUrl);
           images.forEach(img =>{
               let imgUrl = `https://farm${img.farm}.staticflickr.com/${img.server}/${img.id}_${img.secret}_b.jpg`;
               //$(`<img src=${imgUrl}>`).appendTo('.gallery');
@@ -158,7 +196,7 @@ let baseLayers = {
       let fTemp = Math.round((weather.list[0].main.temp - 273.16) * 1.8 + 32);
       temp = Math.round(cTemp) + "&deg;C | " + Math.round(fTemp) + "&deg;F";
       var desc = weather.list[0].weather[0].description;
-  
+      $(".temp").html(temp);
       let font_color;
       let bg_color;
       if (cTemp > 25) {
@@ -328,13 +366,15 @@ let baseLayers = {
           }
   });
 }
+
+
   //=========================================================================================================
   //weather apis ajax call
   const ajaxWeather = (latLng, countryCode=null, country=null, capital=null) =>{
       if(mymap.hasLayer(markers)){
           mymap.removeLayer(markers);
       }
-      
+
         $.ajax({
           url: "./libs/php/apis.php",
           type: "POST",
@@ -405,8 +445,11 @@ let baseLayers = {
                           latLng = [33.693056, 73.063889];
                           break;
                   }
+//                  currency(data[2].currencies[0].code);
                   sidebarContents(data);
                   features(latLng, countryCode, country, capital);
+                  
+                  
                   
                   popup
                   .setLatLng(latLng)
@@ -425,6 +468,7 @@ let baseLayers = {
   //==============================================================================================
   //callback function for country border coordinates
   const coorCountry = (valIsoa2, valIsoa3, valCountry)=>{
+    $(".sidebar").removeClass('is-closed');
     $.ajax({
       url: "./libs/php/countryData.php",
       type: "POST",
@@ -549,11 +593,11 @@ let baseLayers = {
   //=========================================================================================================
   //setting up the map view according to provided Lat/Lng
   const mapLocation = (latLng, country) =>{
-     //latLng = [lat, lng];
-     //mymap.setView([lat, lng], 10);
+     
      if(mymap.hasLayer(circle)){
        mymap.removeLayer(circle);
      }
+     
      mymap.setView(latLng, 10);
   
   //adding the circle around the current loaction
@@ -563,13 +607,10 @@ let baseLayers = {
       fillOpacity: 0.5,
       radius: 500
   }).addTo(mymap);
-  //});
+  
   //circle popup message
   circle.bindPopup("Current Location");
-  //mymap.addLayer(circle);
-  //calling the ajaxWeather function and passing an array of lat/lng to find my location
-  console.log("maplocation latlng countrycode: "+latLng+", "+country);
-//  ajaxWeather(latLng, country);
+  
   }
   
   //==============================================================================================
@@ -595,6 +636,7 @@ let baseLayers = {
           if (results.status.name == "ok"){
               let countryFeatures = results["countryCoord"];
               border.addData(countryFeatures);
+              mymap.fitBounds(border.getBounds());
           }
       },
       error: function(jqXHR, textStatus, errorThrown) {
@@ -614,8 +656,9 @@ let baseLayers = {
       console.log("\nipinfo lat/lng "+loc[0]+ "/"+ loc[1]);
       console.log(response);
       countryCode = response.country;
+      ccTarget = countryCode;
       console.log("countryCode from ipinfo =>: "+ countryCode);
-      mapLocation(latLng, countryCode);
+      //mapLocation(latLng, countryCode);
       onloadCoorCountry(countryCode);
       ajaxWeather(latLng, countryCode);
           
@@ -623,29 +666,13 @@ let baseLayers = {
   
   }
   
-  
-    // =========================================================================================================
-    /* const parks
-  
-    //Parks Api Button
-    L.easyButton( {
-      states:[
-        {
-          //icon: '<span class="target">&target;</span>',
-          icon: '<span class="fas fa-tree fa-2x target"></span>',
-          onClick: location
-        }
-      ]
-    })
-    .setPosition("bottomright")
-    .addTo(mymap); */
-  
   // ===========================================================================================================
   // success callback for navigator geolocation
     function success(position) {
       const latitude  = position.coords.latitude;
       const longitude = position.coords.longitude;
       latLng = [latitude, longitude];
+      llTarget = latLng;
       location(latLng);
       console.log(`nav geo Lat/Lon/: ${latitude} / ${longitude}`);    
     }
@@ -676,6 +703,11 @@ let baseLayers = {
   }
   locationNav();
   
+  const targetLoc = ()=>{
+    mapLocation(llTarget, ccTarget);
+    //onloadCoorCountry(countryCode);
+    ajaxWeather(llTarget, ccTarget);
+  }
 
 
   // =========================================================================================================
@@ -685,7 +717,7 @@ let baseLayers = {
         {
           
           icon: '<span class="fas fa-crosshairs fa-2x target"></span>',
-          onClick: locationNav
+          onClick: targetLoc
         }
       ]
     })
