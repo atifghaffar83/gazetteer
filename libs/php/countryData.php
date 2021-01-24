@@ -52,7 +52,7 @@ if(isset($countrySelect)){
 $URLs = array( 
     "http://api.worldbank.org/v2/country/".$_REQUEST['isoa2']."?format=json",
     //country information api endpoint
-    //"https://restcountries.eu/rest/v2/alpha/".$_REQUEST['isoa2']
+    "https://restcountries.eu/rest/v2/alpha/".$_REQUEST['isoa2']
     
 
 );

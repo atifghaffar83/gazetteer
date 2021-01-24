@@ -587,3 +587,136 @@ L.easyButton( {
   });
 
 });
+
+/*popup
+              .setLatLng(mymap.fitBounds(border.getBounds()).getCenter())
+              .openOn(mymap); */
+
+/*
+
+beforeSend: function () {
+            $('#preloader').show();
+        },
+complete: function () {
+                $('#preloader').hide();
+            },
+
+*/
+
+/*
+{"name":"Kosovo","iso_a2":"-99","iso_a3":"-99","iso_n3":"-99"}
+{"name":"N. Cyprus","iso_a2":"-99","iso_a3":"-99","iso_n3":"-99"}
+{"type":"Feature","properties":{"name":"N. Cyprus","iso_a2":"CY","iso_a3":"CYP","iso_n3":"-99"},"geometry":{"type":"Polygon","coordinates":[[[32.73178022637745,35.14002594658844],[32.80247358575275,35.14550364841138],[32.946960890440806,35.3867033961337],[33.667227003724946,35.37321584730551],[34.57647382990046,35.67159556735879],[33.900804477684204,35.245755927057616],[33.97361657078346,35.058506374648],[33.86643965021011,35.09359467217419],[33.675391880027064,35.01786286065045],[33.5256852556775,35.03868846286407],[33.475817498515845,35.000344550103506],[33.45592207208347,35.10142365166641],[33.3838334490363,35.16271190036457],[33.19097700372305,35.17312470147138],[32.919572381326134,35.08783274997364],[32.73178022637745,35.14002594658844]]]}},
+{"type":"Feature","properties":{"name":"Somaliland","iso_a2":"-99","iso_a3":"-99","iso_n3":"-99"},"geometry":{"type":"Polygon","coordinates":[[[48.938129510296505,9.451748968946674],[48.48673587422701,8.83762624758998],[47.78942,8.003],[46.94832848489796,7.996876532417388],[43.67875,9.18358000000012],[43.29697513201876,9.540477403191744],[42.92812,10.021940000000143],[42.55876,10.57258000000013],[42.77685184100096,10.92687856693442],[43.14530480324214,11.462039699748857],[43.470659620951665,11.27770986576388],[43.66666832863484,10.864169216348158],[44.11780358254282,10.445538438351605],[44.614259067570856,10.442205308468942],[45.55694054543915,10.698029486529776],[46.645401238803004,10.816549383991173],[47.525657586462785,11.12722809492999],[48.02159630716778,11.193063869669743],[48.37878380716927,11.375481675660126],[48.94820641459347,11.41062164961852],[48.94200524271844,11.394266058798166],[48.93849124532261,10.982327378783452],[48.93823286316109,9.973500067581483],[48.938129510296505,9.451748968946674]]]}},
+ let menuIcon = `<div class="boxicon">
+            <svg id="menu" viewBox="0 0 512 512"><circle cx="256" cy="98.33" r="42.51"/><circle cx="256" cy="256" r="42.51"/><circle cx="256" cy="413.67" r="42.51"/></svg>
+          </div>`;
+.boxicon svg {
+  fill: #76E0B4;
+  height: 20px;
+  width: 20px;
+  cursor: pointer;
+}
+.boxicon svg:hover {
+  fill: white;
+  transition: 0.3s ease;
+}
+
+
+#menu circle:nth-child(1) {
+  -webkit-transform-origin: center;
+  transform-origin: center;
+  -webkit-animation: menucircleAnimation 2s linear infinite;
+  animation: menucircleAnimation 2s linear infinite;
+  -webkit-animation-delay: 0.2s;
+  animation-delay: 0.2s;
+}
+#menu circle:nth-child(2) {
+  -webkit-transform-origin: center;
+  transform-origin: center;
+  -webkit-animation: menucircleAnimation 2s linear infinite;
+  animation: menucircleAnimation 2s linear infinite;
+}
+#menu circle:nth-child(3) {
+  -webkit-transform-origin: center;
+  transform-origin: center;
+  -webkit-animation: menucircleAnimation 2s linear infinite;
+  animation: menucircleAnimation 2s linear infinite;
+  -webkit-animation-delay: 0.4s;
+  animation-delay: 0.4s;
+}
+
+@keyframes menucircleAnimation {
+  0% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  25% {
+    transform: translate(150px, 0);
+    opacity: 0;
+  }
+  35% {
+    transform: translate(-150px, 0);
+    opacity: 0;
+  }
+  45% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+.boxicon{
+  position: relative;
+  color: #fff;
+}
+
+
+//////////////////////////////////////////////////
+
+// ===========================================================================================================
+// getting current location information using lat/lng
+  function location(latLng) {
+
+    $.ajax({
+      url: "./libs/php/ipinfo.php",
+      type: "POST",
+      data: {
+        lat: latLng[0],
+        lng: latLng[1],
+      },
+      beforeSend: function () {
+        $('#preloader').show();
+    },
+      dataType: "json",
+      success: function(results){
+          
+          if (results.status.name == "ok") {
+
+            console.log(results);
+            countryCode = results.country;
+            ccTarget = countryCode;
+            onloadCoorCountry(countryCode, latLng);
+            
+      }
+    },
+      complete: function () {
+        $('#preloader').hide();
+    },
+
+      error: function(jqXHR, textStatus, errorThrown) {
+          // your error code
+          console.log("No data passed from ipinfo.php File");
+      }
+  });
+      
+}
+
+
+
+
+
+
+
+
+
+*/

@@ -1,13 +1,12 @@
 <?php
 include('../../config.php');
 
-$endpoint = 'live';
-$currency = $_REQUEST["currency"];
-//$currency = 'PAB';
+$cCode = $_REQUEST["countryCode"];
+//$cCode = 'IN';
 
 
-//$url = "http://api.currencylayer.com/live?access_key=".$access_key."&currencies=".$currency."&format=1";
-$url = "https://free.currconv.com/api/v7/convert?q=USD_".$currency."&compact=ultra&apiKey=".$currconvKey;
+$url = "https://holidayapi.com/v1/holidays?pretty&key=".$holdayKey."&country=".$cCode."&year=2020";
+//$url = "https://date.nager.at/api/v2/PublicHolidays/2020/".$cCode;
 
 
 //Following is http request for weather api
@@ -28,7 +27,7 @@ $output['status']['name'] = "ok";
 $output['status']['description'] = "mission saved";
 $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
 //$output['currency'] = $decode['result'];
-$output['currency'] = $decode;
+$output['holiday'] = $decode;
 
 header('Content-Type: application/json; charset=UTF-8');
 

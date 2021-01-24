@@ -36,6 +36,21 @@ switch($_REQUEST['isoa2']){
         $_REQUEST["lng"] = -15.96;
         break;
 
+    case "CF":
+        $_REQUEST["lat"] = 4.39;
+        $_REQUEST["lng"] = 18.55;
+        break;
+
+    case "HN":
+        $_REQUEST["lat"] = 14.10;
+        $_REQUEST["lng"] = -87.20;
+        break;
+    
+    case "FK":
+        $_REQUEST["lat"] = -51.69;
+        $_REQUEST["lng"] = -57.84;
+        break;
+
     default:
     $_REQUEST["lat"];
     $_REQUEST["lng"];
@@ -47,30 +62,14 @@ $URLs = array(
     //openeather Api
     //"https://api.openweathermap.org/data/2.5/find?lat=" . $_REQUEST['lat'] . "&lon=" . $_REQUEST['lng'] . "&cnt=1&appid=".$appidOpenWeather,
     "http://api.openweathermap.org/data/2.5/forecast?lat=" . $_REQUEST['lat'] . "&lon=" . $_REQUEST['lng'] . "&appid=".$appidOpenWeather,
-    //? working but not sure useful
-    //ok earthquake
-    //"http://api.geonames.org/earthquakesJSON?formatted=true&north=55.0583836008072&south=47.2701236047002&east=15.0418156516163&west=5.8663152683722&username=".$usernameGeoname."&style=full",
     //ok find wiki link latlng
     "http://api.geonames.org/findNearbyWikipediaJSON?formatted=true&lat=".$_REQUEST['lat']."&lng=".$_REQUEST['lng']."&username=".$usernameGeoname."&style=full&maxRows=1",
-    //ok currency echange rate base $ all countries    
-    //"https://openexchangerates.org/api/latest.json?app_id=".$appidOpenxchng,
     //ok country information flag, currency, capital, languag, currency,  time offset, region ASAI, country code, population, area, ltlan
     "https://restcountries.eu/rest/v2/alpha/".$_REQUEST['isoa2'],
     //1 hpoto for banner
-    "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=".$apikeyFlickr."&lat=".$_REQUEST['lat']."&lon=".$_REQUEST['lng']."&per_page=10&page=10&format=json&nojsoncallback=1&radius=20&radius_units=mi",
+    "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=".$apikeyFlickr."&lat=".$_REQUEST['lat']."&lon=".$_REQUEST['lng']."&per_page=10&page=10&format=json&nojsoncallback=1&radius=20&radius_units=mi&in_gallery=true&extras=description",
     //photos keyword and latlng
-    "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=".$apikeyFlickr."&lat=".$_REQUEST['lat']."&lon=".$_REQUEST['lng']."&per_page=10&page=10&format=json&nojsoncallback=1&radius=20&radius_units=mi",
-    //timezone api
-    //"http://api.geonames.org/timezoneJSON?formatted=true&lat=".$_REQUEST['lat']."&lng=".$_REQUEST['lng']."&username=".$usernameGeoname."&style=full",
-    //ok museums latlng
-    //"https://api.opentripmap.com/0.1/en/places/radius?radius=10000&lon=".$_REQUEST['lng']."&lat=".$_REQUEST['lat']."&kinds=museums,monuments_and_memorials,interesting_places&format=geojson&apikey=".$apikeyOpenTripMap,
-    //ok monuments and memorials details
-    //"https://api.opentripmap.com/0.1/en/places/radius?radius=3000&lon=".$_REQUEST['lng']."&lat=".$_REQUEST['lat']."&kinds=monuments_and_memorials&format=json&apikey=".$apikeyOpenTripMap,
-    //intresting plaxes using latlng
-    //"https://api.opentripmap.com/0.1/en/places/radius?radius=3000&lon=".$_REQUEST['lng']."&lat=".$_REQUEST['lat']."&kinds=interesting_places&format=json&apikey=".$apikeyOpenTripMap,
-    //weather forecast 5days 3 hours
-    //"http://api.openweathermap.org/data/2.5/forecast?lat=" . $_REQUEST['lat'] . "&lon=" . $_REQUEST['lng'] . "&appid=".$appidOpenWeather,
-    
+    "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=".$apikeyFlickr."&lat=".$_REQUEST['lat']."&lon=".$_REQUEST['lng']."&per_page=10&page=10&format=json&nojsoncallback=1&radius=20&radius_units=mi&in_gallery=true&extras=description",
     
 );
 

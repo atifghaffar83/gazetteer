@@ -1,8 +1,25 @@
+$(window).on('load', function () { 
+  if ($('#preloader').length) { 
+    $('#preloader').delay(500).fadeOut('slow', function () { 
+      //$(this).remove(); 
+      $(this).hide(); 
+      
+    }); 
+  } 
+});
+
 $(document).ready(()=>{
+  //POPOVER
+  $(function () {
+    $('[data-toggle="popover"]').popover();
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+
+  $("#data-alert").hide();
+
   //global variables
       let tileLayerKey = config.tileLayer;
       let ipinfoTokenKey = config.ipinfoToken;
-      let userGeoname = config.usernameGeoname;
       let mapboxkey = config.mapbox;
       let border;
       let circle;
@@ -10,16 +27,15 @@ $(document).ready(()=>{
       let temp;
       let date;
       let markers;
-      let fgCity;
-      let cityMarks;
       let valIsoa3;
       let valIsoa2;
       let valCountry;
       let countryCode;
-      let latLng;
       let ccTarget;
       let llTarget;
       let control;
+      let fgCountry;
+      
   
   //=========================================================================================================
   //sidebar function
@@ -35,7 +51,7 @@ $(document).ready(()=>{
   //=========================================================================================================
   //Setting up map and tiles
        
-      let tileLayer = L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key='+tileLayerKey, {
+let tileLayer = L.tileLayer('https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key='+tileLayerKey, {
       attribution: 'Map data &copy; <a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
       maxZoom: 16,
       zoom: 6,
@@ -50,21 +66,34 @@ $(document).ready(()=>{
 			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 		mbUrl = `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${mapboxkey}`;
 
-	let grayscale   = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
-		streets  = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
+  let grayscale   = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', 
+                                        tileSize: 512, 
+                                        zoomOffset: -1, 
+                                        attribution: mbAttr, 
+                                        maxZoom: 16,
+                                        zoom: 6,
+                                        minZoom: 2}),
+    streets  = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', 
+                                  tileSize: 512, 
+                                  zoomOffset: -1, 
+                                  attribution: mbAttr, 
+                                  maxZoom: 16,
+                                  zoom: 6,
+                                  minZoom: 2}
+    );
 
 let mymap = L.map('mapid',{
   center: [51.505, -0.09],
   zoom: 8,
-  layers: [tileLayer]
+  layers: [streets]
 });
 
 //  mymap.addLayer(tileLayer);
 
 let baseLayers = {
-  "TileLayer" : tileLayer,
   "Grayscale": grayscale,
-  "Streets": streets
+  "Streets": streets,
+  //"TileLayer" : tileLayer,
 };
 
   mymap.zoomControl.setPosition('bottomright');
@@ -88,8 +117,7 @@ let baseLayers = {
   //=========================================================================================================
 //currency live rate usd to selected country
 const currency = (currencyCode)=>{
-  console.log("Currency code rate live=================");
-
+  
   $.ajax({
     url: "./libs/php/currencyapi.php",
     type: "POST",
@@ -98,25 +126,66 @@ const currency = (currencyCode)=>{
         currency: currencyCode,
         
     },
+    beforeSend: function () {
+      $('#preloader').show();
+  },
     dataType: "json",
     success: function(results){
-      if (results.status.name == "ok"){}
-      let timestamp = results.currency.timestamp;
-      let cur = results.currency.quotes;
-      let currVal = Object.values(cur);
-      console.log('excng' + currVal);
-      //let xchng = cur[`USD${currencyCode}`];
-      console.log(results);
-      //console.log(xchng);
-      //console.log(timestamp);
-      let d = new Date(timestamp*1000);
-      let timeinfo = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()} @ ${d.getHours()}:${d.getMinutes()}`;
-      $(".currency").html(`1 USD in ${currencyCode} : ${currVal} (${timeinfo})`);
-        
+      if (results.status.name == "ok"){
+      
+      let cur = results.currency[`USD_${currencyCode}`];
+      $(".currency").html(`1 USD : ${cur} ${currencyCode}`); 
+      let curfor = Math.round((cur + Number.EPSILON) * 100) / 100;
+      $(".currency").html(`<strong>Currency: </strong>1 USD : ${curfor} ${currencyCode}`);
+      }  
     },
+    complete: function () {
+      $('#preloader').hide();
+  },
+
     error: function(jqXHR, textStatus, errorThrown) {
       // your error code
       console.log("No data coming from currencyapi.php file");
+  }
+});
+}
+
+  //=========================================================================================================
+//currency live rate usd to selected country
+const holiday = (cCode)=>{
+  
+  $.ajax({
+    url: "./libs/php/holidayApi.php",
+    type: "POST",
+    data: {
+        
+        countryCode: cCode,
+        
+    },
+    beforeSend: function () {
+      $('#preloader').show();
+  },
+    dataType: "json",
+    success: function(results){
+      if (results.status.name == "ok"){
+      
+        let holidaylist = results.holiday.holidays;
+        
+        holidaylist.forEach(holiday =>{
+        //$("#dropdownMenuLink").append(`<li class="dropdown-item"><strong>"aaa"</strong>"bbb"</li>`);
+        $("#holiday").append(`<li class="dropdown-item"><strong>${holiday.name}</strong> ${holiday.date}</li>`);
+      })
+
+      }  
+    },
+    complete: function () {
+      $('#preloader').hide();
+  },
+
+    error: function(jqXHR, textStatus, errorThrown) {
+      // your error code
+      console.log("No data coming from holidayApi.php file");
+     
   }
 });
 }
@@ -149,12 +218,25 @@ const currency = (currencyCode)=>{
           $(".tempDesc").html(results[0].list[0].weather[0].description.toLowerCase()+" ");
           //$(".temp").html(temp);
           currency(results[2].currencies[0].code);
+          holiday(results[0].city.country);
           $(".facts").html(results[1].geonames[0].summary);
           $(".wikilink").attr("href", "https://"+results[1].geonames[0].wikipediaUrl);
           images.forEach(img =>{
+           
+          let menuIcon = `<i class="fas fa-link fa-lg"></i>`;
               let imgUrl = `https://farm${img.farm}.staticflickr.com/${img.server}/${img.id}_${img.secret}_b.jpg`;
+              let aTag = `<div class="content"><a href="https://www.flickr.com/photo.gne?rb=1&id=${img.id}" target="_blank">
+                          <div class="content-overlay"></div>
+                          `;
+              let imgContent = `<div class="content-details fadeIn-top">
+                                  <h5>${img.title}</h5>
+                                  <p>${img.description._content}</p>
+                                  ${menuIcon}
+                                </div>`
+              
               //$(`<img src=${imgUrl}>`).appendTo('.gallery');
-              allImg.push(`<img src=${imgUrl} />`);
+              //allImg.push(`${aTag}<img src=${imgUrl} /></a>`);
+              allImg.push(`${aTag}<img src=${imgUrl} />${imgContent}</a></div>`);
           });
           
           $(".gallery").html(allImg);
@@ -280,7 +362,7 @@ const currency = (currencyCode)=>{
   
   //=========================================================================================================
   // featues ajax call
-  const features = (latLng, countryCode=null, country=null, capital=null)=>{
+  const featureMarks = (latLng, countryCode=null, country=null, capital=null)=>{
     if (control != undefined) {
       control.remove(mymap);
       }
@@ -297,10 +379,12 @@ const currency = (currencyCode)=>{
           capital: capital
           
       },
+      beforeSend: function () {
+        $('#preloader').show();
+    },
       dataType: "json",
       success: function(results){
-        console.log("featues results");
-        console.log(results);
+        
         let features = results.features[0].features;
         let geonameTime = results.features[1].gmtOffset;
 
@@ -360,6 +444,9 @@ const currency = (currencyCode)=>{
       control.addTo(mymap);
 
       },
+      complete: function () {
+        $('#preloader').hide();
+    },
       error: function(jqXHR, textStatus, errorThrown) {
       // your error code
       console.log("No data coming from apis.php file");
@@ -374,7 +461,11 @@ const currency = (currencyCode)=>{
       if(mymap.hasLayer(markers)){
           mymap.removeLayer(markers);
       }
+      if(mymap.hasLayer(fgCountry)){
+        mymap.removeLayer(fgCountry);
+    }
 
+  
         $.ajax({
           url: "./libs/php/apis.php",
           type: "POST",
@@ -389,28 +480,26 @@ const currency = (currencyCode)=>{
               
           },
           dataType: "json",
+          beforeSend: function () {
+            $('#preloader').show();
+            $('#options').prop('disabled', true);
+        },
           success: function(results){
               if (results.status.name == "ok"){
                   let data = results.apisData;
                   data = data.filter(Boolean);
-                  console.log("\nApis Result <<<======>>>\n");
-                  console.log(data);
 
                   $(".wfcast").html("");
                   for(i=8; i<data[0].list.length; i+=8){
                     
                     let content = data[0].list[i];
-
                     let dDate = new Date(`${content.dt_txt}`);
-                    //
                     let dDay = dDate.getDay();
-
                     let mcTemp = Math.round(content.main.temp_max - 273.15);
                     let mfTemp = Math.round((content.main.temp_max - 273.16) * 1.8 + 32);
                     let lcTemp = Math.round(content.main.temp_min - 273.15);
                     let lfTemp = Math.round((content.main.temp_min - 273.16) * 1.8 + 32);
                     
-                 
                     $(".wfcast").append(
                       `<div class="forecast" data-wob-di="7" role="button" tabindex="0">
 
@@ -445,22 +534,34 @@ const currency = (currencyCode)=>{
                           latLng = [33.693056, 73.063889];
                           break;
                   }
-//                  currency(data[2].currencies[0].code);
-                  sidebarContents(data);
-                  features(latLng, countryCode, country, capital);
+
+                  let latLngData = [data[0].city.coord.lat, data[0].city.coord.lon];
                   
+                  sidebarContents(data);
+                  featureMarks(latLngData, countryCode, country, capital);
+
+                  fgCountry = L.featureGroup();
+                  let countryMarker = new L.Marker(latLngData).bindPopup(clickPopup(data));
+                  //let countryMarker = new L.Marker(centerBounds).bindPopup(clickPopup(data));
+                  fgCountry.addLayer(countryMarker); 
+                  mymap.addLayer(fgCountry);
                   
                   
                   popup
-                  .setLatLng(latLng)
+                  //.setLatLng(latLngData)
                   .setContent(clickPopup(data))
-                  .openOn(mymap);
+                  //.openOn(mymap)
+                  ;
   
               }
-          },
-          error: function(jqXHR, textStatus, errorThrown) {
-              // your error code
-              console.log("No data coming from apis.php file");
+            },
+            complete: function () {
+                $('#preloader').hide();
+                $("#options").prop('disabled', false);
+            },
+              error: function(jqXHR, textStatus, errorThrown) {
+                  // your error code
+                  console.log("No data coming from apis.php file");
           }
       });
   }
@@ -469,6 +570,7 @@ const currency = (currencyCode)=>{
   //callback function for country border coordinates
   const coorCountry = (valIsoa2, valIsoa3, valCountry)=>{
     $(".sidebar").removeClass('is-closed');
+
     $.ajax({
       url: "./libs/php/countryData.php",
       type: "POST",
@@ -479,28 +581,46 @@ const currency = (currencyCode)=>{
           country: valCountry,
           
       },
+      beforeSend: function () {
+        $('#preloader').show();
+    },
       dataType: "json",
       success: function(results){
           if (results.status.name == "ok"){
               
-              console.log("\nCountry api results=========>");
-              console.log(results);
-              console.log("\n");
-  
               let countryFeatures = results["countryCoord"];
-              
+              border = L.geoJSON().addTo(mymap);
               border.addData(countryFeatures);
+              mymap.addLayer(border);
               mymap.fitBounds(border.getBounds());
-        
-              latLng = [results.apisCountryData[0][1][0].latitude, results.apisCountryData[0][1][0].longitude];
-              let country = results.apisCountryData[0][1][0].name;
-              let capital = results.apisCountryData[0][1][0].capitalCity;
+
+              let llcenter = border.getBounds().getCenter();
+              centerBounds = [llcenter.lat,llcenter.lng];
+
+              let latLng;
+              let country;
+              let capital;
+
+              if(results.apisCountryData[0][1] === undefined ){
+                
+                latLng = [results.apisCountryData[1].latlng[0], results.apisCountryData[1].latlng[1]];
+                country = results.apisCountryData[1].capital;
+                capital = results.apisCountryData[1].capital;
+              } else {
+                latLng = [results.apisCountryData[0][1][0].latitude, results.apisCountryData[0][1][0].longitude];
+                country = results.apisCountryData[0][1][0].name;
+                capital = results.apisCountryData[0][1][0].capitalCity;
+                }
+
               ajaxWeather(latLng, valIsoa2, country, capital);
-              
-              
-              
+              popup
+              .setLatLng(latLng)
+              .openOn(mymap);
           }
       },
+      complete: function () {
+        $('#preloader').hide();
+    },
       error: function(jqXHR, textStatus, errorThrown) {
           // your error code
           console.log("No data coming from countryData.php file");
@@ -525,8 +645,8 @@ const currency = (currencyCode)=>{
       valIsoa2 = $("select :selected").val();
       valCountry = $("select :selected").text();
       
-      border = L.geoJSON().addTo(mymap);
-      mymap.addLayer(border);
+     /*  border = L.geoJSON().addTo(mymap);
+      mymap.addLayer(border); */
     
       coorCountry(valIsoa2, valIsoa3, valCountry);
       
@@ -539,13 +659,9 @@ const currency = (currencyCode)=>{
   //=========================================================================================================
   //onmap click calling the following function
   function onMapClick(e) {
-     latLng = [e.latlng['lat'], e.latlng['lng']];
-     console.log(latLng);
+     let latLng = [e.latlng['lat'], e.latlng['lng']];
      $(".sidebar").addClass('is-closed');
-      /* $.get("http://api.geonames.org/countryCodeJSON?formatted=true&lat="+latLng[0]+"&lng="+latLng[1]+"&username="+userGeoname, function(response) {
-      ajaxWeather(latLng, response.countryCode);    
-  }, "jsonp"); */
-  
+      
   }
   
   //=========================================================================================================
@@ -558,6 +674,9 @@ const currency = (currencyCode)=>{
       url: "./libs/php/areas.php",
       type: "POST",
       //data: data,
+      beforeSend: function () {
+        $('#preloader').show();
+    },
       dataType: "json",
       success: function(results){
           
@@ -585,6 +704,10 @@ const currency = (currencyCode)=>{
               
           }
       },
+      complete: function () {
+        $('#preloader').hide();
+    },
+
       error: function(jqXHR, textStatus, errorThrown) {
           // your error code
           console.log("No data passed from Areas PHP File");
@@ -594,7 +717,9 @@ const currency = (currencyCode)=>{
   //=========================================================================================================
   //setting up the map view according to provided Lat/Lng
   const mapLocation = (latLng, country) =>{
-     
+    if(mymap.hasLayer(border)){
+      mymap.removeLayer(border);
+  }
      if(mymap.hasLayer(circle)){
        mymap.removeLayer(circle);
      }
@@ -616,11 +741,14 @@ const currency = (currencyCode)=>{
   
   //==============================================================================================
   //callback function for country border coordinates
-  const onloadCoorCountry = (valIsoa2)=>{
+  const onloadCoorCountry = (valIsoa2, latLng=null)=>{
     if(mymap.hasLayer(border)){
       mymap.removeLayer(border);
-      //mymap.removeLayer(cityMarks);
-  }
+    }
+    if(mymap.hasLayer(markers)){
+      mymap.removeLayer(markers);
+    }
+
     border = L.geoJSON().addTo(mymap);
     mymap.addLayer(border);
     
@@ -632,14 +760,42 @@ const currency = (currencyCode)=>{
           isoa2: valIsoa2,
           
       },
+      beforeSend: function () {
+        $('#preloader').show();
+    },
       dataType: "json",
       success: function(results){
           if (results.status.name == "ok"){
+            
               let countryFeatures = results["countryCoord"];
               border.addData(countryFeatures);
               mymap.fitBounds(border.getBounds());
+
+              let latLng;
+              let country;
+              let capital;
+
+              if(results.apisCountryData[0][1] === undefined ){
+                
+                latLng = [results.apisCountryData[1].latlng[0], results.apisCountryData[1].latlng[1]];
+                country = results.apisCountryData[1].name;
+                capital = results.apisCountryData[1].capital;
+              } else {
+                latLng = [results.apisCountryData[0][1][0].latitude, results.apisCountryData[0][1][0].longitude];
+                country = results.apisCountryData[0][1][0].name;
+                capital = results.apisCountryData[0][1][0].capitalCity;
+                }
+              
+              //ajaxWeather(latLng, cc);
+              ajaxWeather(latLng, valIsoa2);
+              popup
+              .setLatLng(latLng)
+              .openOn(mymap);
           }
       },
+      complete: function () {
+        $('#preloader').hide();
+    },
       error: function(jqXHR, textStatus, errorThrown) {
           // your error code
           console.log("No data coming from countryData.php file");
@@ -649,33 +805,65 @@ const currency = (currencyCode)=>{
   
   // =========================================================================================================
   //using ipinfo to get coordinates from secure https to get current user location (navigator.geolocation is not working without HTTPS :) ) 
-  function location(latLng) {
+ /*  function location(latLng) {
       
       $.get("https://ipinfo.io?token="+ipinfoTokenKey, function(response) {
-      
       let loc = response.loc.split(',');
-      console.log("\nipinfo lat/lng "+loc[0]+ "/"+ loc[1]);
-      console.log(response);
       countryCode = response.country;
       ccTarget = countryCode;
-      console.log("countryCode from ipinfo =>: "+ countryCode);
-      //mapLocation(latLng, countryCode);
-      onloadCoorCountry(countryCode);
-      ajaxWeather(latLng, countryCode);
+      onloadCoorCountry(countryCode, latLng);
+//      ajaxWeather(latLng, countryCode);
           
   }, "jsonp");
   
-  }
+  } */
+
+
+// ===========================================================================================================
+// getting current location information using lat/lng
+  function location(latLng) {
+
+    $.ajax({
+      url: "./libs/php/ipinfo.php",
+      type: "POST",
+      //data: data,
+      beforeSend: function () {
+        $('#preloader').show();
+    },
+      dataType: "json",
+      success: function(results){
+          
+          if (results.status.name == "ok") {
+
+            countryCode = results.ipinfo.country;
+            ccTarget = countryCode;
+            onloadCoorCountry(countryCode, latLng);
+            
+      }
+    },
+      complete: function () {
+        $('#preloader').hide();
+    },
+
+      error: function(jqXHR, textStatus, errorThrown) {
+          // your error code
+          console.log("No data passed from Areas PHP File");
+      }
+  });
+      
+}
+
+
   
   // ===========================================================================================================
   // success callback for navigator geolocation
     function success(position) {
       const latitude  = position.coords.latitude;
       const longitude = position.coords.longitude;
-      latLng = [latitude, longitude];
+      let latLng = [latitude, longitude];
       llTarget = latLng;
       location(latLng);
-      console.log(`nav geo Lat/Lon/: ${latitude} / ${longitude}`);    
+      
     }
   
   // ===========================================================================================================
@@ -702,12 +890,14 @@ const currency = (currencyCode)=>{
       console.log("geolocation not enabled");
   }
   }
+
   locationNav();
   
   const targetLoc = ()=>{
-    mapLocation(llTarget, ccTarget);
-    //onloadCoorCountry(countryCode);
-    ajaxWeather(llTarget, ccTarget);
+    
+    mapLocation(llTarget);
+    onloadCoorCountry(ccTarget, llTarget);
+    /*ajaxWeather(llTarget, ccTarget); */
   }
 
 
