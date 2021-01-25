@@ -333,10 +333,10 @@ const holiday = (cCode)=>{
               <div class="margintop">
                   <div class="flexing"> 
                   <p class="leftalign"><strong>Capital: </strong>${data[2].capital}</p>
-                  <p class="leftalign"><strong>Population: </strong>${data[2].population}</p>
+                  <p class="leftalign"><strong>Population: </strong>${data[2].population.toLocaleString()}</p>
                   </div>
                   <div class="flexing"> 
-                  <p class="leftalign"><strong>Area: </strong>${data[2].area}</p>
+                  <p class="leftalign"><strong>Area: </strong>${data[2].area.toLocaleString()}</p>
                   <p class="leftalign"><strong>Currency: </strong>${data[2].currencies[0].name}</p>
                   </div>
                   <div class="flexing"> 
@@ -636,7 +636,7 @@ const holiday = (cCode)=>{
                         <div class="covid-cat">
                           <div class="">
                             <button class="btn btn-danger">
-                                <strong data-country-placeholder="total_cases">${covid.total_cases}</strong>
+                                <strong data-country-placeholder="total_cases">${covid.total_cases.toLocaleString()}</strong>
                             </button>
                           </div>
                           <div class="pl-1 pl-sm-2">
@@ -647,7 +647,7 @@ const holiday = (cCode)=>{
                         <div class="covid-cat">
                             <div class="">
                               <button class="btn btn-warning">
-                                  <strong data-country-placeholder="active_cases">${covid.active_cases}</strong>
+                                  <strong data-country-placeholder="active_cases">${covid.active_cases.toLocaleString()}</strong>
                               </button>
                             </div>
                             <div class="pl-1 pl-sm-2">
@@ -658,7 +658,7 @@ const holiday = (cCode)=>{
                         <div class="covid-cat">
                             <div class="">
                               <button class="btn btn-success">
-                                  <strong data-country-placeholder="recovered">${covid.recovered}</strong>
+                                  <strong data-country-placeholder="recovered">${covid.recovered.toLocaleString()}</strong>
                               </button>
                             </div>
                             <div class="pl-1 pl-sm-2">
@@ -669,7 +669,7 @@ const holiday = (cCode)=>{
                         <div class="covid-cat">
                             <div class="">
                               <button class="btn btn-secondary">
-                                  <strong data-country-placeholder="deaths">${covid.deaths}</strong>
+                                  <strong data-country-placeholder="deaths">${covid.deaths.toLocaleString()}</strong>
                               </button>
                             </div>
                             <div class="pl-1 pl-sm-2">

@@ -41,6 +41,10 @@ a{
     
 }
 
+.form-select[multiple], .form-select[size]:not([size="1"]) {
+  background-image: initial;
+}
+
 /*for button above zoom*/
 .target{
   position: absolute;
@@ -162,53 +166,73 @@ a{
   
   @media (max-width: 1440px) {
     .box {
-      /* width: 20vw; */
-      /* width: 20vw; */
       width: 100%;
       height: 60vh;
     }
-  
     .wave {
       top: 85%;
     }
-  
     .weathercon {
       font-size: 5em;
     }
-  
     .info {
       font-size: 1.5rem;
     }
-
-    .wave {
-        top: 100%;
-        
-      }
-      .leaflet-popup-content{
-        
-        width: 20vw;
+    .leaflet-popup-content{
+      width: 20vw;
     }
   }
-  
-  @media (max-height: 500px) {
+
+   @media (max-width : 500px) {
+    .leaflet-popup-content{
+      width: 100%;
+      /* overflow: hidden; */
+     }
     .box {
       width:100%;
-      height: 85vh;
+      height: 100%;
+      
     }
-  
     .wave {
-      top: 80%;
+      top: 0;
     }
     .location{
         font-size: 1.05rem;
     }
     .flexing img{
-        width: 50%;
+        width: 80%;
     }
+    
+   }
+
+   @media (max-width : 415px) {
+    
+    #countryList{
+      left: 0;
+      width: 70%;
+      height: 50%;
+  }
     .leaflet-popup-content{
-     
-        width: 20vw;
+      width: 100%;
+      
+     }
+    
+   }
+  @media (max-height: 500px) {
+    .box {
+      width:100%;
+      height: 100%;
+      overflow-y: scroll;
     }
+  
+    .wave {
+      top: 80%;
+    }
+    
+    .flexing img{
+        width: 60%;
+    }
+
   }
   
    /* card contents*/
@@ -386,9 +410,9 @@ position: absolute;
 
 .sideTop{
     letter-spacing: 0.01428571em;
-    font-family: Roboto, Arial,sans-serif;
+    font-family: Quicksand;
     font-size: .875rem;
-    font-weight: 400;
+    font-weight: 300;
     line-height: 16px;
     /* max-width: 300px; */
     max-width: 100%;
