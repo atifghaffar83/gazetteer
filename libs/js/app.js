@@ -93,7 +93,7 @@ let mymap = L.map('mapid',{
 let baseLayers = {
   "Grayscale": grayscale,
   "Streets": streets,
-  //"TileLayer" : tileLayer,
+  "TileLayer" : tileLayer,
 };
 
   mymap.zoomControl.setPosition('bottomright');
@@ -542,15 +542,12 @@ const holiday = (cCode)=>{
 
                   fgCountry = L.featureGroup();
                   let countryMarker = new L.Marker(latLngData).bindPopup(clickPopup(data));
-                  //let countryMarker = new L.Marker(centerBounds).bindPopup(clickPopup(data));
                   fgCountry.addLayer(countryMarker); 
                   mymap.addLayer(fgCountry);
                   
                   
                   popup
-                  //.setLatLng(latLngData)
                   .setContent(clickPopup(data))
-                  //.openOn(mymap)
                   ;
   
               }
@@ -627,7 +624,98 @@ const holiday = (cCode)=>{
       }
   });
   };
-  
+
+  //==============================================================================================
+  //covid html block
+  const covidHtml = function(results){
+    let covid = results.covid.data.summary;
+    let htmlCovid = `
+                        <h2 class="d-inline">Covid</h2>
+                        <span class="small text-muted">LIVE UPDATE</span>
+                        <div class="covid-flex">
+                        <div class="covid-cat">
+                          <div class="">
+                            <button class="btn btn-danger">
+                                <strong data-country-placeholder="total_cases">${covid.total_cases}</strong>
+                            </button>
+                          </div>
+                          <div class="pl-1 pl-sm-2">
+                              <span class="text-muted small">Confirmed</span>
+                          </div>
+                        </div>
+
+                        <div class="covid-cat">
+                            <div class="">
+                              <button class="btn btn-warning">
+                                  <strong data-country-placeholder="active_cases">${covid.active_cases}</strong>
+                              </button>
+                            </div>
+                            <div class="pl-1 pl-sm-2">
+                                <span class="text-muted small">Active</span>
+                            </div>
+                        </div>
+
+                        <div class="covid-cat">
+                            <div class="">
+                              <button class="btn btn-success">
+                                  <strong data-country-placeholder="recovered">${covid.recovered}</strong>
+                              </button>
+                            </div>
+                            <div class="pl-1 pl-sm-2">
+                                <span class="text-muted small">Recoved</span>
+                            </div>
+                        </div>
+                        
+                        <div class="covid-cat">
+                            <div class="">
+                              <button class="btn btn-secondary">
+                                  <strong data-country-placeholder="deaths">${covid.deaths}</strong>
+                              </button>
+                            </div>
+                            <div class="pl-1 pl-sm-2">
+                                <span class="text-muted small">Deaths</span>
+                            </div>
+                        </div>
+
+                      </div>  
+
+                      `;
+    return htmlCovid;
+  }
+
+  //==============================================================================================
+  //covid function using api
+  const covid = countryName => {
+    $.ajax({
+      url: "./libs/php/covid.php",
+      type: "POST",
+      data: {
+        cName : countryName
+      },
+      beforeSend: function () {
+        $('#preloader').show();
+    },
+      dataType: "json",
+      success: function(results){
+          
+          if (results.status.name == "ok") {
+           console.log(countryName);
+           console.log(results);
+           $("#covid").html(covidHtml(results));
+            
+      }
+    },
+      complete: function () {
+        $('#preloader').hide();
+    },
+
+      error: function(jqXHR, textStatus, errorThrown) {
+          // your error code
+          console.log("No data passed from Areas PHP File");
+      }
+  });
+  };
+
   
   //==============================================================================================
   //catching select value from dropdown country list
@@ -649,7 +737,7 @@ const holiday = (cCode)=>{
       mymap.addLayer(border); */
     
       coorCountry(valIsoa2, valIsoa3, valCountry);
-      
+      covid(valCountry);
   }
   
   //=========================================================================================================
@@ -786,7 +874,7 @@ const holiday = (cCode)=>{
                 capital = results.apisCountryData[0][1][0].capitalCity;
                 }
               
-              //ajaxWeather(latLng, cc);
+              covid(country);
               ajaxWeather(latLng, valIsoa2);
               popup
               .setLatLng(latLng)
