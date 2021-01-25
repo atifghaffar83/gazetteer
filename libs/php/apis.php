@@ -50,7 +50,10 @@ switch($_REQUEST['isoa2']){
         $_REQUEST["lat"] = -51.69;
         $_REQUEST["lng"] = -57.84;
         break;
-
+    case "BO":
+        $_REQUEST["lat"] = -17;
+        $_REQUEST["lng"] = -65;
+        break;
     default:
     $_REQUEST["lat"];
     $_REQUEST["lng"];

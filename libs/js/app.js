@@ -593,7 +593,7 @@ const holiday = (cCode)=>{
 
               let llcenter = border.getBounds().getCenter();
               centerBounds = [llcenter.lat,llcenter.lng];
-
+            
               let latLng;
               let country;
               let capital;
@@ -699,8 +699,7 @@ const holiday = (cCode)=>{
       success: function(results){
           
           if (results.status.name == "ok") {
-           console.log(countryName);
-           console.log(results);
+           
            $("#covid").html(covidHtml(results));
             
       }
