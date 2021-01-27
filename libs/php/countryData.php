@@ -3,6 +3,7 @@
 //Following is preparing country list on page load
 $executionStartTime = microtime(true) / 1000;
 
+
 //=================================================================
 //reading json file for countries border
 $contents = file_get_contents("../data/countryBorders.geo.json");
@@ -11,19 +12,19 @@ $featuresList = $jsonDecode->features;
 
 //=================================================================
 //city list with lat/lon
-$city = file_get_contents("../data/city.list.json");
-$jsonCity = json_decode($city);
+/* $city = file_get_contents("../data/city.list.json");
+$jsonCity = json_decode($city); */
 
 /* $cityList = [];
 foreach($jsonCity as $val){
     $cityList[] = $val;
 }
  */
-if(isset($_REQUEST['isoa2'])){
+/* if(isset($_REQUEST['isoa2'])){
     $cityList = array_filter($jsonCity, function($key){
         return $key->country == $_REQUEST['isoa2'];
     });
-}
+} */
 /* $selectedCities = array_values($cityList);
 }
 
@@ -108,7 +109,7 @@ function apisCountry($urlApis){
     $output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
     $output['apisCountryData'] = $content;
     $output['countryCoord'] = $countryCoord;
-    $output['cityList'] = $cityList;
+    //$output['cityList'] = $cityList;
 
     return $output;
 }

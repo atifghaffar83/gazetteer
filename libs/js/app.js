@@ -35,6 +35,7 @@ $(document).ready(()=>{
       let llTarget;
       let control;
       let fgCountry;
+      let tempCountry = "TR";
       
   
   //=========================================================================================================
@@ -87,6 +88,16 @@ let mymap = L.map('mapid',{
   zoom: 8,
   layers: [streets]
 });
+
+/* mapboxgl.accessToken = 'pk.eyJ1IjoiYXRpZmdoYWZmYXIiLCJhIjoiY2trNTZuNW9wMDRiNzJ4bndicDF1Y2syaSJ9.LdnIxYIrf08e7Tt5Im_Kzw';
+let mymap = L.map('mapid',{
+container: 'mapid',
+style: 'mapbox://styles/mapbox/streets-v11',
+center: [-74.5, 40],
+zoom: 9,
+accessToken: 'pk.eyJ1IjoiYXRpZmdoYWZmYXIiLCJhIjoiY2trNTZuNW9wMDRiNzJ4bndicDF1Y2syaSJ9.LdnIxYIrf08e7Tt5Im_Kzw',
+layers: [streets]
+}); */
 
 //  mymap.addLayer(tileLayer);
 
@@ -209,8 +220,9 @@ const holiday = (cCode)=>{
       
       let images = results[4].photos.photo;
 
-      if(results=="undefined"){
-          $(".sidebar").html("change location no data found for these coordinates");    
+      if(results[0]=="undefined"){
+          $(".sidebar").html("Refresh your page Again");
+          ajaxWeather(valIsoa2);
       } else{
           $(".imgTop").attr("src", imgTop);
           $(".area").html(results[0].city.name);
@@ -277,9 +289,10 @@ const holiday = (cCode)=>{
       let cTemp = Math.round(weather.list[0].main.temp - 273.15);
       let fTemp = Math.round((weather.list[0].main.temp - 273.16) * 1.8 + 32);
       temp = Math.round(cTemp) + "&deg;C | " + Math.round(fTemp) + "&deg;F";
-      var desc = weather.list[0].weather[0].description;
+      /* var desc = weather.list[0].weather[0].description; */
       $(".temp").html(temp);
-      let font_color;
+
+      /* let font_color;
       let bg_color;
       if (cTemp > 25) {
         font_color = "#fff";
@@ -290,16 +303,10 @@ const holiday = (cCode)=>{
       }
       let weathercon;
       if (weather.list[0].weather[0].main == "Sunny" || weather.list[0].weather[0].main == "sunny") {
-        /* $(".weathercon").html(
-          "<i class='fas fa-sun' style='color: #d36326;'></i>"
-        ); */
           weathercon = "<i class='fas fa-sun' style='color: #d36326;'></i>";
       } else {
           weathercon = "<i class='fas fa-cloud' style='color: #44c3de;'></i>";
-        /* $(".weathercon").html(
-          "<i class='fas fa-cloud' style='color: #44c3de;'></i>"
-        ); */
-      }
+      } */
   
       let html = `
       <div class='box'>
@@ -327,20 +334,20 @@ const holiday = (cCode)=>{
               </div>
               
               <div class="flexing"> 
-                  <h5 class="heading"><strong>${data[2].name} (${data[2].nativeName})</strong></h5>
+                  <h5 class="heading"><strong>${data[2] ? data[2].name : "n/a"} (${data[2] ? data[2].nativeName: "n/a"})</strong></h5>
                   
               </div>
               <div class="margintop">
                   <div class="flexing"> 
-                  <p class="leftalign"><strong>Capital: </strong>${data[2].capital}</p>
-                  <p class="leftalign"><strong>Population: </strong>${data[2].population.toLocaleString()}</p>
+                  <p class="leftalign"><strong>Capital: </strong>${data[2] ? data[2].capital : "n/a"}</p>
+                  <p class="leftalign"><strong>Population: </strong>${data[2] ? data[2].population.toLocaleString(): "n/a"}</p>
                   </div>
                   <div class="flexing"> 
-                  <p class="leftalign"><strong>Area: </strong>${data[2].area.toLocaleString()}</p>
-                  <p class="leftalign"><strong>Currency: </strong>${data[2].currencies[0].name}</p>
+                  <p class="leftalign"><strong>Area: </strong>${data[2] ? data[2].area.toLocaleString(): "n/a"}</p>
+                  <p class="leftalign"><strong>Currency: </strong>${data[2].currencies[0] ? data[2].currencies[0].name : "n/a"}</p>
                   </div>
                   <div class="flexing"> 
-                  <img class="flag" src=${data[2].flag} >
+                  <img class="flag" src=${data[2] ? data[2].flag : ""} >
                   </div>
                   <div class="flexing"> 
                   
@@ -439,7 +446,7 @@ const holiday = (cCode)=>{
       let overlays = {
         "Landmarks": markers
       };
-      control = L.control.layers(baseLayers, overlays);
+      control = L.control.layers(baseLayers, overlays, {position : 'topright'});
       mymap.addLayer(markers);
       control.addTo(mymap);
 
@@ -488,7 +495,7 @@ const holiday = (cCode)=>{
               if (results.status.name == "ok"){
                   let data = results.apisData;
                   data = data.filter(Boolean);
-
+                  console.log(data);
                   $(".wfcast").html("");
                   for(i=8; i<data[0].list.length; i+=8){
                     
@@ -503,7 +510,7 @@ const holiday = (cCode)=>{
                     $(".wfcast").append(
                       `<div class="forecast" data-wob-di="7" role="button" tabindex="0">
 
-                          <div class="fdcolor fdld" aria-label="Tuesday">
+                          <div class="fdcolor fdld">
                             ${weekday[dDay]}
                           </div>
                           <div class="fimg">
@@ -545,9 +552,10 @@ const holiday = (cCode)=>{
                   fgCountry.addLayer(countryMarker); 
                   mymap.addLayer(fgCountry);
                   
-                  
                   popup
                   .setContent(clickPopup(data))
+                  .setLatLng(latLngData)
+                  .openOn(mymap);
                   ;
   
               }
@@ -584,35 +592,40 @@ const holiday = (cCode)=>{
       dataType: "json",
       success: function(results){
           if (results.status.name == "ok"){
-              
+              console.log("country Code data");
+              console.log(results);
               let countryFeatures = results["countryCoord"];
               border = L.geoJSON().addTo(mymap);
               border.addData(countryFeatures);
               mymap.addLayer(border);
               mymap.fitBounds(border.getBounds());
-
+              
               let llcenter = border.getBounds().getCenter();
               centerBounds = [llcenter.lat,llcenter.lng];
-            
+              mymap.setView(centerBounds, 4);
+
+              let woData = results.apisCountryData[0][1];
+              let restData = results.apisCountryData[1];
+
               let latLng;
               let country;
               let capital;
 
-              if(results.apisCountryData[0][1] === undefined ){
+              if(woData === undefined ){
                 
-                latLng = [results.apisCountryData[1].latlng[0], results.apisCountryData[1].latlng[1]];
-                country = results.apisCountryData[1].capital;
-                capital = results.apisCountryData[1].capital;
+                latLng = [restData.latlng[0], restData.latlng[1]];
+                country = restData.country;
+                capital = restData.capital;
               } else {
-                latLng = [results.apisCountryData[0][1][0].latitude, results.apisCountryData[0][1][0].longitude];
-                country = results.apisCountryData[0][1][0].name;
-                capital = results.apisCountryData[0][1][0].capitalCity;
+                latLng = [woData[0].latitude ? woData[0].latitude : restData.latlng[0] , woData[0].longitude ?woData[0].longitude: restData.latlng[1]];
+                country = woData[0].name ? woData[0].name : restData.country;
+                capital = woData[0].capitalCity ? woData[0].capitalCity : restData.capital;
                 }
 
               ajaxWeather(latLng, valIsoa2, country, capital);
-              popup
+              /* popup
               .setLatLng(latLng)
-              .openOn(mymap);
+              .openOn(mymap); */
           }
       },
       complete: function () {
@@ -630,7 +643,7 @@ const holiday = (cCode)=>{
   const covidHtml = function(results){
     let covid = results.covid.data.summary;
     let htmlCovid = `
-                        <h2 class="d-inline">Covid</h2>
+                        <h2 class="d-inline covidCol">Covid</h2>
                         <span class="small text-muted">LIVE UPDATE</span>
                         <div class="covid-flex">
                         <div class="covid-cat">
@@ -699,7 +712,8 @@ const holiday = (cCode)=>{
       success: function(results){
           
           if (results.status.name == "ok") {
-           
+           console.log("COVID results");
+           console.log(results);
            $("#covid").html(covidHtml(results));
             
       }
@@ -786,7 +800,11 @@ const holiday = (cCode)=>{
                           
               for( row in allData){
                   
-                  $("#options").append('<option data-isoa3='+allData[row]['iso_a3']+ ' value='+allData[row]['iso_a2']+'>'+allData[row]['name']+'</option>');
+                  //$("#options").append('<option data-isoa3='+allData[row]['iso_a3']+ ' value='+allData[row]['iso_a2']+'>'+allData[row]['name']+'</option>');
+                  $("#options").append(`<option data-isoa3=${allData[row]['iso_a3']} value=${allData[row]['iso_a2']} ${tempCountry == allData[row]['iso_a2'] ? 'selected=true' : ''} > ${allData[row]['name']} </option>`);
+                  /* if ( s.options[i].text == v ) {
+                    console.log(s.options[i].text);
+                    s.options[i].selected = true; */
               }
               
           }
@@ -875,9 +893,9 @@ const holiday = (cCode)=>{
               
               covid(country);
               ajaxWeather(latLng, valIsoa2);
-              popup
+              /* popup
               .setLatLng(latLng)
-              .openOn(mymap);
+              .openOn(mymap); */
           }
       },
       complete: function () {
@@ -957,6 +975,10 @@ const holiday = (cCode)=>{
   // error callback function if an issue findind currentPosition
   function error(err) {
       console.warn(`Location ERROR(${err.code}): ${err.message}`);
+      let latLng = [41, 28.96];
+      llTarget =  latLng;
+      let countryCode = "TR";
+      onloadCoorCountry(countryCode, latLng);
     }
   
   // ============================================================================================================
@@ -975,6 +997,7 @@ const holiday = (cCode)=>{
   } else{
       //geolocation not enabled
       console.log("geolocation not enabled");
+      
   }
   }
 
@@ -1011,6 +1034,41 @@ const holiday = (cCode)=>{
     .blur(function(){
       $(".form-select").attr("size", "0");
     });
+
+
+    function setSelectedIndex(s, v) {
+
+      for ( var i = 0; i < s.options.length; i++ ) {
   
+          if ( s.options[i].text == v ) {
+              console.log(s.options[i].text);
+              s.options[i].selected = true;
+
+              return;
+  
+          }
+  
+      }
+  
+  }
+  
+  setSelectedIndex(document.getElementById('options'),"Turkey");
+  
+  // Create a condition that targets viewports at least 415px wide
+/* const mediaQuery = window.matchMedia('(max-width: 415px)');
+
+if(mediaQuery.matches){
+  console.log("matches");
+  
+} else{
+  console.log("no match");
+} */
+
+/* // Register event listener
+mediaQuery.addEventListener(handleTabletChange);
+
+//Initial check
+handleTabletChange(mediaQuery); */
+
   });
   

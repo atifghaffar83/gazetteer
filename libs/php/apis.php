@@ -13,7 +13,9 @@ $featuresList = $jsonDecode->features;
 
 /* $_REQUEST["lat"] = 55.94;
 $_REQUEST["lng"] = -4.32;
-$_REQUEST["isoa2"] = "GB"; */
+$_REQUEST["isoa2"] = "BO"; */
+$_REQUEST["country"] = "Bolivia";
+$_REQUEST["capital"] = "sucre";
 
 switch($_REQUEST['isoa2']){
     case "PS":
@@ -50,10 +52,15 @@ switch($_REQUEST['isoa2']){
         $_REQUEST["lat"] = -51.69;
         $_REQUEST["lng"] = -57.84;
         break;
-    case "BO":
+    /* case "BO":
         $_REQUEST["lat"] = -17;
         $_REQUEST["lng"] = -65;
+        break; */
+    /* case "TW":
+        $_REQUEST["lat"] = 23.5;
+        $_REQUEST["lng"] = 121;
         break;
+         */
     default:
     $_REQUEST["lat"];
     $_REQUEST["lng"];
@@ -66,13 +73,16 @@ $URLs = array(
     //"https://api.openweathermap.org/data/2.5/find?lat=" . $_REQUEST['lat'] . "&lon=" . $_REQUEST['lng'] . "&cnt=1&appid=".$appidOpenWeather,
     "http://api.openweathermap.org/data/2.5/forecast?lat=" . $_REQUEST['lat'] . "&lon=" . $_REQUEST['lng'] . "&appid=".$appidOpenWeather,
     //ok find wiki link latlng
-    "http://api.geonames.org/findNearbyWikipediaJSON?formatted=true&lat=".$_REQUEST['lat']."&lng=".$_REQUEST['lng']."&username=".$usernameGeoname."&style=full&maxRows=1",
+    //"http://api.geonames.org/findNearbyWikipediaJSON?formatted=true&lat=".$_REQUEST['lat']."&lng=".$_REQUEST['lng']."&username=".$usernameGeoname."&style=full&maxRows=1",
+    "http://api.geonames.org/wikipediaSearchJSON?formatted=true&q=".$_REQUEST['capital'].",".$_REQUEST['country']."&maxRows=1&username=".$usernameGeoname."&style=full",
     //ok country information flag, currency, capital, languag, currency,  time offset, region ASAI, country code, population, area, ltlan
     "https://restcountries.eu/rest/v2/alpha/".$_REQUEST['isoa2'],
     //1 hpoto for banner
     "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=".$apikeyFlickr."&lat=".$_REQUEST['lat']."&lon=".$_REQUEST['lng']."&per_page=10&page=10&format=json&nojsoncallback=1&radius=20&radius_units=mi&in_gallery=true&extras=description",
     //photos keyword and latlng
     "https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=".$apikeyFlickr."&lat=".$_REQUEST['lat']."&lon=".$_REQUEST['lng']."&per_page=10&page=10&format=json&nojsoncallback=1&radius=20&radius_units=mi&in_gallery=true&extras=description",
+    //wikilinks using capital city and country
+    //"http://api.geonames.org/wikipediaSearchJSON?formatted=true&q=".$_REQUEST['capital'].",".$_REQUEST['country']."&maxRows=1&username=".$usernameGeoname."&style=full",
     
 );
 

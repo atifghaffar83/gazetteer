@@ -3,7 +3,7 @@ include('../../config.php');
 
 
 $url = "https://ipinfo.io?token=".$ipinfoToken;
-//$url = "https://date.nager.at/api/v2/PublicHolidays/2020/".$cCode;
+
 
 
 //Following is http request for weather api
