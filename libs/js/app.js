@@ -587,7 +587,7 @@ const holiday = (cCode)=>{
               
               let llcenter = border.getBounds().getCenter();
               centerBounds = [llcenter.lat,llcenter.lng];
-              mymap.setView(centerBounds, 4);
+              mymap.flyTo(centerBounds, 4);
 
               let woData = results.apisCountryData[0][1];
               let restData = results.apisCountryData[1];
