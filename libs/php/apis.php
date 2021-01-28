@@ -14,8 +14,8 @@ $featuresList = $jsonDecode->features;
 /* $_REQUEST["lat"] = 55.94;
 $_REQUEST["lng"] = -4.32;
 $_REQUEST["isoa2"] = "BO"; */
-$_REQUEST["country"] = "Bolivia";
-$_REQUEST["capital"] = "sucre";
+/* $_REQUEST["country"] = "Bolivia";
+$_REQUEST["capital"] = "sucre"; */
 
 switch($_REQUEST['isoa2']){
     case "PS":
@@ -52,29 +52,52 @@ switch($_REQUEST['isoa2']){
         $_REQUEST["lat"] = -51.69;
         $_REQUEST["lng"] = -57.84;
         break;
-    /* case "BO":
-        $_REQUEST["lat"] = -17;
-        $_REQUEST["lng"] = -65;
-        break; */
-    /* case "TW":
+    case "BO":
+        $_REQUEST["lat"] = -17.41;
+        $_REQUEST["lng"] = -66.16;
+        break;
+    case "TW":
         $_REQUEST["lat"] = 23.5;
         $_REQUEST["lng"] = 121;
         break;
-         */
+    case "DE":
+        $_REQUEST["lat"] = 52.51;
+        $_REQUEST["lng"] = 13.38;
+        break;
+    case "GW":
+        $_REQUEST["lat"] = 11.86;
+        $_REQUEST["lng"] = -15.58;
+        break;
+    case "LA":
+        $_REQUEST["lat"] = 17.96;
+        $_REQUEST["lng"] = 102.61;
+        break;
+    case "MG":
+        $_REQUEST["lat"] = -18.91;
+        $_REQUEST["lng"] = 47.52;
+        break;
+    case "EH":
+        $_REQUEST["lat"] = 27.15;
+        $_REQUEST["lng"] = -13.20;
+        break;
     default:
     $_REQUEST["lat"];
     $_REQUEST["lng"];
     
 }
 
+$capCountry = $_REQUEST['capital'].','.$_REQUEST['country'];
+//$capCountry = 'Buenos Aires'.','.'Argentina';
+//echo($capCountry);
 //open weather api end points
 $URLs = array( 
     //openeather Api
     //"https://api.openweathermap.org/data/2.5/find?lat=" . $_REQUEST['lat'] . "&lon=" . $_REQUEST['lng'] . "&cnt=1&appid=".$appidOpenWeather,
     "http://api.openweathermap.org/data/2.5/forecast?lat=" . $_REQUEST['lat'] . "&lon=" . $_REQUEST['lng'] . "&appid=".$appidOpenWeather,
     //ok find wiki link latlng
-    //"http://api.geonames.org/findNearbyWikipediaJSON?formatted=true&lat=".$_REQUEST['lat']."&lng=".$_REQUEST['lng']."&username=".$usernameGeoname."&style=full&maxRows=1",
-    "http://api.geonames.org/wikipediaSearchJSON?formatted=true&q=".$_REQUEST['capital'].",".$_REQUEST['country']."&maxRows=1&username=".$usernameGeoname."&style=full",
+    "http://api.geonames.org/findNearbyWikipediaJSON?formatted=true&lat=".$_REQUEST['lat']."&lng=".$_REQUEST['lng']."&username=".$usernameGeoname."&style=full&maxRows=1",
+    //"http://api.geonames.org/wikipediaSearchJSON?formatted=true&q=".$_REQUEST['capital'].','.$_REQUEST['country']."&maxRows=10&username=".$usernameGeoname."&style=full",
+    //"http://api.geonames.org/wikipediaSearchJSON?formatted=true&q=".$capCountry."&username=".$usernameGeoname."&style=full&maxRows=10",
     //ok country information flag, currency, capital, languag, currency,  time offset, region ASAI, country code, population, area, ltlan
     "https://restcountries.eu/rest/v2/alpha/".$_REQUEST['isoa2'],
     //1 hpoto for banner
@@ -117,12 +140,17 @@ function apisLatLng($urlApis){
 
     $ch[$i] = curl_init();
     
-    curl_setopt($ch[$i], CURLOPT_URL, $url);
+    curl_escape($ch[$i], $url);
+    /* echo("<pre>");
+    echo($url);
+    echo("<pre>"); */
+    
     curl_setopt($ch[$i], CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch[$i], CURLOPT_HEADER, 0);
     curl_setopt($ch[$i], CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch[$i], CURLOPT_TIMEOUT, 0);
-    
+    curl_setopt($ch[$i], CURLOPT_URL, $url);
+
     curl_multi_add_handle($mh, $ch[$i]);
     
     }

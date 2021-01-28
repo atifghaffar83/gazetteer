@@ -292,22 +292,6 @@ const holiday = (cCode)=>{
       /* var desc = weather.list[0].weather[0].description; */
       $(".temp").html(temp);
 
-      /* let font_color;
-      let bg_color;
-      if (cTemp > 25) {
-        font_color = "#fff";
-        bg_color = "#ff9090";
-      } else {
-        font_color = "#fff";
-        bg_color = "#9899a0";
-      }
-      let weathercon;
-      if (weather.list[0].weather[0].main == "Sunny" || weather.list[0].weather[0].main == "sunny") {
-          weathercon = "<i class='fas fa-sun' style='color: #d36326;'></i>";
-      } else {
-          weathercon = "<i class='fas fa-cloud' style='color: #44c3de;'></i>";
-      } */
-  
       let html = `
       <div class='box'>
       
@@ -342,8 +326,8 @@ const holiday = (cCode)=>{
                   <p class="leftalign"><strong>Capital: </strong>${data[2] ? data[2].capital : "n/a"}</p>
                   <p class="leftalign"><strong>Population: </strong>${data[2] ? data[2].population.toLocaleString(): "n/a"}</p>
                   </div>
-                  <div class="flexing"> 
-                  <p class="leftalign"><strong>Area: </strong>${data[2] ? data[2].area.toLocaleString(): "n/a"}</p>
+                  <div class="flexing">
+                  <p class="leftalign"><strong>Area: </strong>${data[2].area ? data[2].area.toLocaleString(): "n/a"}</p>
                   <p class="leftalign"><strong>Currency: </strong>${data[2].currencies[0] ? data[2].currencies[0].name : "n/a"}</p>
                   </div>
                   <div class="flexing"> 
@@ -494,8 +478,9 @@ const holiday = (cCode)=>{
           success: function(results){
               if (results.status.name == "ok"){
                   let data = results.apisData;
-                  data = data.filter(Boolean);
-                  console.log(data);
+                  //data = data.filter(Boolean);
+                  /* console.log("Apis Data");
+                  console.log(data); */
                   $(".wfcast").html("");
                   for(i=8; i<data[0].list.length; i+=8){
                     
@@ -592,8 +577,8 @@ const holiday = (cCode)=>{
       dataType: "json",
       success: function(results){
           if (results.status.name == "ok"){
-              console.log("country Code data");
-              console.log(results);
+              /* console.log("country Code data");
+              console.log(results); */
               let countryFeatures = results["countryCoord"];
               border = L.geoJSON().addTo(mymap);
               border.addData(countryFeatures);
@@ -641,6 +626,7 @@ const holiday = (cCode)=>{
   //==============================================================================================
   //covid html block
   const covidHtml = function(results){
+    if(results.covid.data){
     let covid = results.covid.data.summary;
     let htmlCovid = `
                         <h2 class="d-inline covidCol">Covid</h2>
@@ -694,6 +680,20 @@ const holiday = (cCode)=>{
 
                       `;
     return htmlCovid;
+  } else {
+    let noCovidData = ` <h2 class="d-inline covidCol">Covid</h2>
+                        <span class="small text-muted">LIVE UPDATE</span>
+                        <div class="covid-cat">
+                          <div class="">
+                            <button class="btn btn-danger">
+                                <strong data-country-placeholder="total_cases">No covid data available.</strong>
+                            </button>
+                          </div>
+                          
+                        </div>
+    `
+    return noCovidData;
+  }
   }
 
   //==============================================================================================
@@ -712,8 +712,8 @@ const holiday = (cCode)=>{
       success: function(results){
           
           if (results.status.name == "ok") {
-           console.log("COVID results");
-           console.log(results);
+           /* console.log("COVID results");
+           console.log(results); */
            $("#covid").html(covidHtml(results));
             
       }
@@ -876,19 +876,22 @@ const holiday = (cCode)=>{
               border.addData(countryFeatures);
               mymap.fitBounds(border.getBounds());
 
+              let woData = results.apisCountryData[0][1];
+              let restData = results.apisCountryData[1];
+
               let latLng;
               let country;
               let capital;
 
-              if(results.apisCountryData[0][1] === undefined ){
+              if(woData === undefined ){
                 
-                latLng = [results.apisCountryData[1].latlng[0], results.apisCountryData[1].latlng[1]];
-                country = results.apisCountryData[1].name;
-                capital = results.apisCountryData[1].capital;
+                latLng = [restData.latlng[0], restData.latlng[1]];
+                country = restData.country;
+                capital = restData.capital;
               } else {
-                latLng = [results.apisCountryData[0][1][0].latitude, results.apisCountryData[0][1][0].longitude];
-                country = results.apisCountryData[0][1][0].name;
-                capital = results.apisCountryData[0][1][0].capitalCity;
+                latLng = [woData[0].latitude ? woData[0].latitude : restData.latlng[0] , woData[0].longitude ?woData[0].longitude: restData.latlng[1]];
+                country = woData[0].name ? woData[0].name : restData.country;
+                capital = woData[0].capitalCity ? woData[0].capitalCity : restData.capital;
                 }
               
               covid(country);
@@ -974,7 +977,7 @@ const holiday = (cCode)=>{
   // ===========================================================================================================
   // error callback function if an issue findind currentPosition
   function error(err) {
-      console.warn(`Location ERROR(${err.code}): ${err.message}`);
+      //console.warn(`Location ERROR(${err.code}): ${err.message}`);
       let latLng = [41, 28.96];
       llTarget =  latLng;
       let countryCode = "TR";
@@ -996,7 +999,7 @@ const holiday = (cCode)=>{
       navigator.geolocation.clearWatch(watch);
   } else{
       //geolocation not enabled
-      console.log("geolocation not enabled");
+      //console.log("geolocation not enabled");
       
   }
   }
@@ -1041,7 +1044,7 @@ const holiday = (cCode)=>{
       for ( var i = 0; i < s.options.length; i++ ) {
   
           if ( s.options[i].text == v ) {
-              console.log(s.options[i].text);
+              /* console.log(s.options[i].text); */
               s.options[i].selected = true;
 
               return;

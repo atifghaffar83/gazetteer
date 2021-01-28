@@ -2,16 +2,17 @@
 include('../../config.php');
 
 $countryName = $_REQUEST["cName"];
-//$countryName = "united kingdom";
-
+//$countryName = "Bosnia and Herzegovina";
+//echo($countryName);
 $url = "https://api.quarantine.country/api/v1/summary/region?region=".$countryName;
+
 
 
 
 //Following is http request for weather api
 $executionStartTime = microtime(true) / 1000;
 $ch = curl_init();
-//curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_URL,$url);
 
