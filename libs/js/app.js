@@ -587,7 +587,7 @@ const holiday = (cCode)=>{
               
               let llcenter = border.getBounds().getCenter();
               centerBounds = [llcenter.lat,llcenter.lng];
-              mymap.flyTo(centerBounds, 4, {duration: 3,easeLinearity: 1});
+              mymap.flyTo(centerBounds, 4, {duration: 2,easeLinearity: 1});
 
               let woData = results.apisCountryData[0][1];
               let restData = results.apisCountryData[1];
@@ -878,7 +878,7 @@ const holiday = (cCode)=>{
 
               let llcenter = border.getBounds().getCenter();
               centerBounds = [llcenter.lat,llcenter.lng];
-              mymap.flyTo(llcenter, 4, {duration: 3,easeLinearity: 1});
+              mymap.flyTo(llcenter, 4, {duration: 2,easeLinearity: 1});
 
               let woData = results.apisCountryData[0][1];
               let restData = results.apisCountryData[1];
@@ -900,9 +900,7 @@ const holiday = (cCode)=>{
               
               covid(country);
               ajaxWeather(latLng, valIsoa2);
-              /* popup
-              .setLatLng(latLng)
-              .openOn(mymap); */
+           
           }
       },
       complete: function () {
@@ -914,22 +912,6 @@ const holiday = (cCode)=>{
       }
   });
   };
-  
-  // =========================================================================================================
-  //using ipinfo to get coordinates from secure https to get current user location (navigator.geolocation is not working without HTTPS :) ) 
- /*  function location(latLng) {
-      
-      $.get("https://ipinfo.io?token="+ipinfoTokenKey, function(response) {
-      let loc = response.loc.split(',');
-      countryCode = response.country;
-      ccTarget = countryCode;
-      onloadCoorCountry(countryCode, latLng);
-//      ajaxWeather(latLng, countryCode);
-          
-  }, "jsonp");
-  
-  } */
-
 
 // ===========================================================================================================
 // getting current location information using lat/lng
@@ -965,9 +947,7 @@ const holiday = (cCode)=>{
       
 }
 
-
-  
-  // ===========================================================================================================
+// ===========================================================================================================
   // success callback for navigator geolocation
     function success(position) {
       const latitude  = position.coords.latitude;
@@ -1011,9 +991,10 @@ const holiday = (cCode)=>{
   locationNav();
   
   const targetLoc = ()=>{
-    
+    //console.log(ccTarget+","+ llTarget);
     mapLocation(llTarget);
-    onloadCoorCountry(ccTarget, llTarget);
+    location(llTarget);
+    //onloadCoorCountry(ccTarget, llTarget);
     /*ajaxWeather(llTarget, ccTarget); */
   }
 
@@ -1060,22 +1041,6 @@ const holiday = (cCode)=>{
   }
   
   setSelectedIndex(document.getElementById('options'),"Turkey");
-  
-  // Create a condition that targets viewports at least 415px wide
-/* const mediaQuery = window.matchMedia('(max-width: 415px)');
-
-if(mediaQuery.matches){
-  console.log("matches");
-  
-} else{
-  console.log("no match");
-} */
-
-/* // Register event listener
-mediaQuery.addEventListener(handleTabletChange);
-
-//Initial check
-handleTabletChange(mediaQuery); */
 
   });
   

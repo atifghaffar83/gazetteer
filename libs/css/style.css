@@ -167,7 +167,8 @@ a{
   @media (max-width: 1440px) {
     .box {
       width: 100%;
-      height: 60vh;
+      /* height: 60vh; */
+      height: 100%;
     }
     .wave {
       top: 85%;
@@ -181,6 +182,9 @@ a{
     .leaflet-popup-content{
       width: 20vw;
     }
+    .flexing img{
+      width: 80%;
+  }
   }
 
    @media (max-width : 500px) {
