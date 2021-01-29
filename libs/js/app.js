@@ -587,7 +587,7 @@ const holiday = (cCode)=>{
               
               let llcenter = border.getBounds().getCenter();
               centerBounds = [llcenter.lat,llcenter.lng];
-              mymap.flyTo(centerBounds, 4);
+              mymap.flyTo(centerBounds, 4, {duration: 3,easeLinearity: 1});
 
               let woData = results.apisCountryData[0][1];
               let restData = results.apisCountryData[1];
@@ -875,6 +875,10 @@ const holiday = (cCode)=>{
               let countryFeatures = results["countryCoord"];
               border.addData(countryFeatures);
               mymap.fitBounds(border.getBounds());
+
+              let llcenter = border.getBounds().getCenter();
+              centerBounds = [llcenter.lat,llcenter.lng];
+              mymap.flyTo(llcenter, 4, {duration: 3,easeLinearity: 1});
 
               let woData = results.apisCountryData[0][1];
               let restData = results.apisCountryData[1];
