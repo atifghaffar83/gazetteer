@@ -164,7 +164,8 @@ const currency = (currencyCode)=>{
   //=========================================================================================================
 //currency live rate usd to selected country
 const holiday = (cCode)=>{
-  
+  let holidaylist = "";
+  $("#holiday").html("");
   $.ajax({
     url: "./libs/php/holidayApi.php",
     type: "POST",
@@ -180,10 +181,9 @@ const holiday = (cCode)=>{
     success: function(results){
       if (results.status.name == "ok"){
       
-        let holidaylist = results.holiday.holidays;
+        holidaylist = results.holiday.holidays;
         
         holidaylist.forEach(holiday =>{
-        //$("#dropdownMenuLink").append(`<li class="dropdown-item"><strong>"aaa"</strong>"bbb"</li>`);
         $("#holiday").append(`<li class="dropdown-item"><strong>${holiday.name}</strong> ${holiday.date}</li>`);
       })
 
